@@ -274,13 +274,16 @@ without depending on a review that might be skipped.
 - `ProjectDetail.tsx` — the GitHub card renders for a non-empty `githubUrl` and is absent
   for an empty one. This guards a confidentiality rule, not just a layout preference, so
   it is not optional.
-Current state: Vitest is configured (`vitest.config.ts`, `src/test/setup.ts`) but
-`package.json` defines no `test` script and `src/test/example.test.ts` is a placeholder.
-There is no existing suite to regress against, so the rendering tests above are the only
-guard on the optional-field design and must be written alongside the schema change rather
-than after it.
+Current state: Vitest is fully configured and running. `vitest.config.ts` sets a jsdom
+environment with globals enabled and the `@` alias; `src/test/setup.ts` loads
+`@testing-library/jest-dom` and stubs `matchMedia`. `package.json` defines both
+`test` (`vitest run`) and `test:watch`. `@testing-library/react` is installed.
 
-Adding a `test` script to `package.json` is part of step 1.
+`npm test` currently passes with one placeholder test (`src/test/example.test.ts`).
+
+There is therefore no meaningful existing suite to regress against. The tests above are
+the only guard on the optional-field design and must be written alongside the schema
+change rather than after it. No test tooling setup is required.
 
 ## Services Rewrite
 
