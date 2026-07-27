@@ -3,6 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import projects from "@/data/projects";
 import Footer from "@/components/Footer";
+import CaseStudy from "@/components/project/CaseStudy";
+import ArchitectureDiagram from "@/components/project/ArchitectureDiagram";
+import BusinessValue from "@/components/project/BusinessValue";
 
 const ProjectDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -133,6 +136,34 @@ const ProjectDetail = () => {
                 <p className="text-secondary-foreground leading-relaxed">{project.overview}</p>
               </motion.div>
 
+              {/* Case Study */}
+              {project.caseStudy && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.25 }}
+                >
+                  <h2 className="font-heading text-2xl font-bold mb-4">
+                    Case <span className="gradient-text">Study</span>
+                  </h2>
+                  <CaseStudy data={project.caseStudy} accent={color1} />
+                </motion.div>
+              )}
+
+              {/* Business Value */}
+              {project.businessValue && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.35 }}
+                >
+                  <h2 className="font-heading text-2xl font-bold mb-4">
+                    Business <span className="gradient-text">Value</span>
+                  </h2>
+                  <BusinessValue data={project.businessValue} accent={color1} />
+                </motion.div>
+              )}
+
               {/* Key Features */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -212,6 +243,21 @@ const ProjectDetail = () => {
               </button>
             </motion.div>
           </div>
+
+          {/* Architecture - full width */}
+          {project.architecture && (
+            <motion.div
+              className="max-w-4xl mx-auto mt-12"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <h2 className="font-heading text-2xl font-bold mb-4">
+                <span className="gradient-text">Architecture</span>
+              </h2>
+              <ArchitectureDiagram data={project.architecture} accent={color1} />
+            </motion.div>
+          )}
         </div>
       </section>
 
