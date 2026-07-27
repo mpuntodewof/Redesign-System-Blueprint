@@ -140,21 +140,70 @@ const projects: Project[] = [
     slug: "banking-middleware-apis",
     title: "Banking Middleware APIs",
     type: "Backend System",
-    problem: "Legacy banking systems couldn't support real-time BI-FAST transactions",
-    impact: "1000+ daily transactions processed with 40% fewer errors",
+    problem: "Building real-time interbank transfer from nothing, where a retry must never move money twice",
+    impact: "1,000+ daily transactions across web and mobile, running 24/7",
     stack: [".NET Core", "C#", "Microservices", "SQL Server", "Docker", "REST API", "Web Forms"],
     overview:
-      "A middleware service built for PT Bank Raya to enable BI-FAST (Bank Indonesia Fast Payment) interbank fund transfers. The system handles over 1,000 daily transactions across web and mobile banking platforms with a strong focus on data consistency, validation, and security. The architecture includes real-time transaction processing, comprehensive error handling, and performance-optimized SQL queries to maintain system stability under peak banking hours. Additionally, a Card Management System was developed to support daily operations for 5,000+ active cardholders with automated card issuance and status tracking workflows.",
+      "A middleware service enabling BI-FAST (Bank Indonesia Fast Payment) interbank fund transfers, built as a new system rather than a replacement for an existing one. It handles over 1,000 daily transactions across web and mobile banking channels on a 24/7 basis, where the defining constraint is that a transfer must debit one account and credit another exactly once — no retry, timeout, or reconnection may turn a single instruction into two movements of money. A Card Management System was developed alongside it, supporting daily operations for 5,000+ active cardholders through automated issuance and status tracking.",
     features: [
-      "Real-time BI-FAST interbank fund transfer processing",
+      "Real-time interbank fund transfer processing on a 24/7 basis",
       "Multi-channel support across web and mobile banking applications",
+      "Idempotent transaction handling so a retry cannot duplicate a transfer",
+      "Paired debit and credit treated as one atomic outcome",
       "Transaction validation with comprehensive data consistency checks",
       "Optimized SQL Server queries for peak-load performance",
       "Card Management System supporting 5,000+ active cardholders",
-      "Automated card issuance, renewal, and status tracking workflows",
       "Detailed transaction logging for audit and compliance requirements",
     ],
-    githubUrl: "https://github.com/mpuntodewof",
+    caseStudy: {
+      context:
+        "This was a new build rather than a migration — there was no prior system whose behaviour had to be preserved. That removes one class of constraint and introduces another: with no existing implementation to compare against, correctness has to be reasoned about up front rather than validated against what the old system did.",
+      challenge:
+        "Idempotency, and the fact that a transfer is two movements that must succeed or fail as one. A debit without its matching credit loses a customer's money; a credit without its debit creates money. Because the service runs 24/7 across channels that retry on timeout, the same instruction can arrive more than once, and the second arrival is indistinguishable from a genuine second transfer unless the system is built to tell them apart. A timeout is the worst case: the caller does not know whether the transfer succeeded, so it retries, and a naive implementation processes it twice.",
+      approach:
+        "Transaction identifiers are generated randomly rather than sequentially, which removed a class of ID-collision failures where concurrently generated identifiers could clash and cause transactions to be mismatched during processing and reconciliation.\n\nOn the general problem: the standard approach to this class of failure is a client-supplied idempotency key carried on the request, persisted under a uniqueness constraint before any money moves. A repeat arrival with the same key finds the stored record and returns the original outcome instead of executing again, which makes a retry safe by construction rather than by timing. The debit and credit are written in one transaction so partial application is not representable, and every attempt is logged for reconciliation.",
+      outcome:
+        "The BI-FAST capability shipped and runs continuously, processing over a thousand customer transactions a day across web and mobile channels.",
+    },
+    architecture: {
+      summary:
+        "A generalised view of the payment middleware pattern: channels submit a transfer instruction, the middleware establishes whether it has seen that instruction before, records the paired debit and credit atomically, and only then talks to the clearing network. Recording before dispatching is what makes a retry answerable.",
+      nodes: [
+        { id: "channels", label: "Channel Layer", sub: "web, mobile", group: "source" },
+        { id: "middleware", label: "Transaction API", sub: "validation", group: "service" },
+        { id: "ledger", label: "Transaction Store", sub: "atomic write", group: "store" },
+        { id: "core", label: "Core Banking", sub: "debit / credit", group: "target" },
+        { id: "clearing", label: "Clearing Network", sub: "interbank", group: "target" },
+      ],
+      edges: [
+        { from: "channels", to: "middleware", label: "instruction" },
+        { from: "middleware", to: "ledger", label: "record first" },
+        { from: "ledger", to: "core", label: "paired posting" },
+        { from: "ledger", to: "clearing", label: "settle" },
+      ],
+      decisions: [
+        {
+          title: "Randomised transaction identifiers",
+          detail:
+            "Sequential or time-derived identifiers can collide when generated concurrently, and a collision in a payment system means two different transfers become confusable during processing and reconciliation. Randomising removed that failure mode.",
+        },
+        {
+          title: "Record before dispatch",
+          detail:
+            "Writing the transaction before contacting downstream systems is what makes a retry answerable: on a repeat arrival there is already a record to consult. Dispatching first leaves a window where the system has moved money it has no record of.",
+        },
+      ],
+    },
+    businessValue: {
+      metrics: [
+        { value: "1,000+", label: "daily transactions" },
+        { value: "24/7", label: "continuous operation" },
+        { value: "5,000+", label: "cardholders served" },
+      ],
+      narrative:
+        "Interbank transfer is a domain where the cost of a duplicate is measured in customer money and regulatory exposure rather than in a retry. Delivering it as a new build meant establishing that correctness from the start, with no prior implementation to fall back on.",
+    },
+    githubUrl: "",
     headerGradient: ["263 70% 50%", "239 84% 67%"],
   },
   {

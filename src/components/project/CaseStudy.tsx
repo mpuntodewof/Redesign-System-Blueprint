@@ -23,7 +23,17 @@ const CaseStudy = ({ data, accent }: CaseStudyProps) => {
           >
             {block.label}
           </h3>
-          <p className="text-secondary-foreground leading-relaxed">{block.body}</p>
+          {/* Split on blank lines so a block can separate distinct points —
+              e.g. a decision taken on the project versus the general pattern
+              for that class of problem. Without this they run together. */}
+          {block.body.split("\n\n").map((paragraph, index) => (
+            <p
+              key={index}
+              className="text-secondary-foreground leading-relaxed [&:not(:last-child)]:mb-3"
+            >
+              {paragraph}
+            </p>
+          ))}
         </div>
       ))}
     </div>

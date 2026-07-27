@@ -18,6 +18,13 @@ describe("CaseStudy", () => {
     expect(screen.getByText("Outcome")).toBeInTheDocument();
   });
 
+  it("splits a block into paragraphs on a blank line", () => {
+    const multi = { ...data, approach: "First point.\n\nSecond point." };
+    render(<CaseStudy data={multi} accent="239 84% 67%" />);
+    expect(screen.getByText("First point.")).toBeInTheDocument();
+    expect(screen.getByText("Second point.")).toBeInTheDocument();
+  });
+
   it("renders the prose for each block", () => {
     render(<CaseStudy data={data} accent="239 84% 67%" />);
     expect(screen.getByText(data.context)).toBeInTheDocument();
