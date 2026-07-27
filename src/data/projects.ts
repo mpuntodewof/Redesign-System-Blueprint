@@ -1,3 +1,47 @@
+export interface CaseStudy {
+  context: string;
+  challenge: string;
+  approach: string;
+  outcome: string;
+}
+
+export type ArchitectureGroup = "source" | "service" | "store" | "target";
+
+export interface ArchitectureNode {
+  id: string;
+  label: string;
+  sub?: string;
+  group: ArchitectureGroup;
+}
+
+export interface ArchitectureEdge {
+  from: string;
+  to: string;
+  label?: string;
+}
+
+export interface ArchitectureDecision {
+  title: string;
+  detail: string;
+}
+
+export interface Architecture {
+  summary: string;
+  nodes: ArchitectureNode[];
+  edges: ArchitectureEdge[];
+  decisions?: ArchitectureDecision[];
+}
+
+export interface BusinessMetric {
+  value: string;
+  label: string;
+}
+
+export interface BusinessValue {
+  metrics: BusinessMetric[];
+  narrative: string;
+}
+
 export interface Project {
   slug: string;
   title: string;
@@ -10,6 +54,9 @@ export interface Project {
   githubUrl: string;
   headerGradient: [string, string]; // two HSL colors for the header background
   clickable?: boolean; // defaults to true if omitted
+  caseStudy?: CaseStudy;
+  architecture?: Architecture;
+  businessValue?: BusinessValue;
 }
 
 const projects: Project[] = [
