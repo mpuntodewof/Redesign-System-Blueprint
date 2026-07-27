@@ -1105,6 +1105,20 @@ git commit -m "feat: render case study, architecture, and business value section
 
 No code changes. This catches what jsdom cannot — spacing, dark mode, mobile reflow.
 
+**Automated portion completed 2026-07-27.** Production build succeeds (the >500 kB chunk
+warning is pre-existing and unrelated). Dev server returns 200 for `/`,
+`/project/habit-tracker`, `/project/e-credit-management`, and
+`/project/talenta-sap-integration`. The built bundle contains the Case Study, Business
+Value, and Key Decisions markup and the `architecture-stack` test id, while
+`src/data/projects.ts` declares zero occurrences of `caseStudy:`, `architecture:`, or
+`businessValue:` — confirming all three sections ship but stay dormant, which is the
+optional-field design working.
+
+**Steps 2-4 below still need a human eye** and are best done once flagship content exists
+in Task 9, since there is currently no project that renders the new sections. Dark mode
+and mobile reflow of the diagram cannot be verified against a page that does not yet
+display one.
+
 - [ ] **Step 1: Start the dev server**
 
 Run: `npm run dev`
@@ -1283,3 +1297,35 @@ git commit -m "feat: rewrite services around four freelance offerings"
 
 Tasks 1-8 are unblocked and can run start to finish. Tasks 9 and 10 need interview
 content and are independent of each other. Task 11 depends on both.
+
+---
+
+## Deviations from plan (recorded 2026-07-27)
+
+Two changes were made during execution that this plan did not originally specify. Both
+came out of review and are committed.
+
+**1. SVG accessible label describes the flow** (`6045228`). As first written, the SVG
+carried `aria-label="Architecture diagram"`. Because `role="img"` collapses the SVG
+subtree, none of the `<text>` node labels were announced — and the mobile stack that does
+expose them is `display: none` at desktop width, so it is absent from the accessibility
+tree entirely. Desktop screen-reader users could not reach the node names at all. The
+label is now built from the same column data the diagram renders, so it cannot drift from
+what is drawn. Verified by mutation: restoring the static label fails the new test.
+
+**2. Dev-only warning for dangling edge references** (`625c81a`). `resolveEdges` drops
+edges whose `from`/`to` match no node id. That prevents a typo from breaking the diagram,
+but it also means a mistyped id produces a silently missing connection. Since architecture
+data is hand-written per project, this was the likeliest content error and the hardest to
+notice. `findDanglingEdgeIds` was added to `layout.ts` as a pure, unit-tested function,
+and `ArchitectureDiagram` calls it behind `import.meta.env.DEV`, naming both the
+unresolved ids and the known ones.
+
+**Also note:** the plan's Task 7 Step 9 called for `npm run lint`. The repo has
+pre-existing lint errors in `src/components/ui/command.tsx`,
+`src/components/ui/textarea.tsx`, and `tailwind.config.ts`, so that command exits 1
+regardless of this work. Linting was scoped to changed files instead
+(`npx eslint src/components/project/ src/pages/ProjectDetail.tsx`), which is clean.
+
+Final state: 33 tests across 6 files, typecheck clean, changed-file lint clean, production
+build succeeds.
