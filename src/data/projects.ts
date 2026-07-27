@@ -198,21 +198,80 @@ const projects: Project[] = [
   {
     slug: "stockledger",
     title: "StockLedger",
-    type: "Full-Stack Application",
-    problem: "No real-time visibility into inventory levels across warehouses",
-    impact: "Real-time inventory tracking with automated alerts and reporting",
-    stack: ["React", "TypeScript", ".NET Core", "SQL Server", "REST API", "Tailwind CSS"],
-    overview:
-      "StockLedger is a full-stack inventory management application designed to provide real-time visibility into stock levels across multiple warehouse locations. The system features a responsive React frontend with an intuitive dashboard displaying live inventory metrics, automated low-stock alerts, and comprehensive reporting capabilities. The .NET Core backend powers a robust REST API with optimized database queries for fast data retrieval, supporting concurrent users without performance degradation. The application streamlines warehouse operations by replacing manual spreadsheet-based tracking with an automated, centralized platform.",
-    features: [
-      "Real-time inventory dashboard with live stock level monitoring",
-      "Multi-warehouse support with location-based filtering",
-      "Automated low-stock alerts and reorder notifications",
-      "Comprehensive reporting with export capabilities",
-      "Product categorization and search functionality",
-      "Stock movement history and audit trail",
-      "Responsive design for desktop and tablet use",
+    type: "Multi-Tenant SaaS",
+    problem: "Retailers selling across several channels cannot see true stock or real profit after platform fees",
+    impact: "Multi-tenant inventory and accounting platform with Indonesian tax compliance built in",
+    stack: [
+      ".NET 8",
+      "Clean Architecture",
+      "Blazor",
+      "EF Core 8",
+      "MySQL",
+      "JWT + BCrypt",
+      "xUnit",
+      "Swagger",
     ],
+    overview:
+      "StockLedger is a multi-tenant SaaS platform for Indonesian mid-size retailers who sell through several channels at once. It closes three gaps those businesses share: stock that cannot be seen as one number across channels, profit that looks healthy until platform fees are subtracted, and PPN tax obligations that are handled by hand. The platform pairs an immutable stock movement ledger with a full double-entry accounting system, so inventory and finance describe the same events rather than drifting apart. It is built on .NET 8 in a Clean Architecture layering, with a Blazor front end and 19 REST controllers behind JWT authentication.",
+    features: [
+      "Single-database multi-tenancy with TenantId isolation enforced by global query filters",
+      "Immutable stock movement ledger across multiple warehouses",
+      "Double-entry journal with balance validation and a hierarchical chart of accounts",
+      "Purchase order state machine: draft, submit, approve, goods receipt",
+      "Invoice management with e-Faktur numbering and configurable PPN rates",
+      "70+ granular permissions with custom role support",
+      "JWT access and refresh tokens with BCrypt password hashing",
+      "Idempotency middleware and immutable audit logging",
+    ],
+    caseStudy: {
+      context:
+        "Indonesian retailers selling across marketplaces and their own storefront typically run inventory in spreadsheets and accounting somewhere else entirely. The two never agree. Profit per order looks fine until marketplace commissions, and PPN obligations for PKP-registered businesses are reconciled manually at the end of each month.",
+      challenge:
+        "Inventory and accounting cannot be two systems that sync. A goods receipt is simultaneously a stock movement and a journal entry, and if either can exist without the other the books stop matching the warehouse. On top of that, one deployment has to serve many businesses without any chance of one tenant reading another's data, and tax records must remain provable after the fact.",
+      approach:
+        "Stock movements are an append-only ledger rather than a mutable quantity field, so current stock is derived from history and every change keeps its cause. Financial events are written as balanced double-entry journals validated before posting. Tenancy is enforced at the data layer through global query filters on TenantId, so isolation does not depend on each individual query remembering to filter. Documents move through explicit state machines — purchase orders draft to approved to received, invoices draft to issued to paid — which keeps illegal transitions out of the domain rather than out of the UI.",
+      outcome:
+        "The platform covers the full retail cycle in one system: store setup, purchasing and receiving, multi-channel sales import, monthly close with tax compliance, and reporting. Because stock and finance are written from the same events, the books and the warehouse cannot silently disagree.",
+    },
+    architecture: {
+      summary:
+        "Clean Architecture layering keeps the domain free of infrastructure: dependencies point inward, so entities and use cases know nothing about EF Core, MySQL, or the web. Tenant isolation sits in the infrastructure layer as a global query filter, which is what stops a missed WHERE clause from becoming a data leak.",
+      nodes: [
+        { id: "blazor", label: "Blazor UI", sub: "Server + WASM", group: "source" },
+        { id: "api", label: "Web API", sub: "19 controllers", group: "service" },
+        { id: "app", label: "Application", sub: "use cases, DTOs", group: "service" },
+        { id: "domain", label: "Domain", sub: "entities, no deps", group: "store" },
+        { id: "infra", label: "Infrastructure", sub: "EF Core, JWT", group: "store" },
+        { id: "db", label: "MySQL 8", sub: "tenant-filtered", group: "target" },
+      ],
+      edges: [
+        { from: "blazor", to: "api", label: "REST" },
+        { from: "api", to: "app", label: "delegate" },
+        { from: "app", to: "domain", label: "depends on" },
+        { from: "infra", to: "db", label: "EF Core" },
+      ],
+      decisions: [
+        {
+          title: "Append-only stock ledger over a quantity column",
+          detail:
+            "Current stock is derived from movement history rather than stored and overwritten. A mutable quantity field loses the reason a number changed, which is exactly what an audit needs. The cost is that reads must aggregate; the benefit is that stock is always explainable.",
+        },
+        {
+          title: "Tenant isolation as a global query filter",
+          detail:
+            "Filtering by TenantId in each query works until one query forgets. Enforcing it once at the EF Core level makes isolation the default and a leak the exception, rather than relying on every future query being written correctly.",
+        },
+      ],
+    },
+    businessValue: {
+      metrics: [
+        { value: "75", label: "features across inventory and finance" },
+        { value: "70+", label: "granular permissions" },
+        { value: "19", label: "REST controllers" },
+      ],
+      narrative:
+        "Rather than a warehouse tool with reporting bolted on, this is a single system where an inventory event and its accounting consequence are written together — which is what makes the monthly close and the tax filing derivable rather than reconstructed.",
+    },
     githubUrl: "https://github.com/mpuntodewof/StockLedger",
     headerGradient: ["160 84% 39%", "217 91% 60%"],
   },
@@ -220,22 +279,151 @@ const projects: Project[] = [
     slug: "habit-tracker",
     title: "Habit Tracker",
     type: "Full-Stack Application",
-    problem: "Personal productivity tool to build and maintain daily habits",
-    impact: "Complete CRUD app with streak tracking and analytics dashboard",
-    stack: ["React", "TypeScript", ".NET Core", "MySQL", "Bootstrap", "REST API", "Chart.js"],
-    overview:
-      "A full-stack personal productivity application designed to help users build and maintain daily habits through streak tracking and visual analytics. The app features a clean, intuitive interface where users can create custom habits, log daily completions, and track their progress over time with interactive charts. The .NET Core backend manages user data with a MySQL database, providing a RESTful API for seamless frontend communication. The analytics dashboard offers insights into habit completion rates, longest streaks, and weekly/monthly trends to keep users motivated and accountable.",
-    features: [
-      "Custom habit creation with flexible scheduling options",
-      "Daily check-in system with streak tracking",
-      "Interactive analytics dashboard with completion rate charts",
-      "Weekly and monthly progress trend visualization",
-      "Habit categorization and priority management",
-      "Streak milestone achievements and notifications",
-      "Responsive mobile-friendly interface",
+    problem: "Habit apps show what you did without making the pattern visible enough to act on",
+    impact: "Calendar-based tracking with streak analytics behind a hardened token auth flow",
+    stack: [
+      "React 19",
+      "TypeScript",
+      ".NET 8",
+      "EF Core 9",
+      "SQL Server",
+      "Material UI 7",
+      "ApexCharts",
+      "FluentValidation",
     ],
+    overview:
+      "A full-stack habit tracking application built around the idea that consistency is easier to sustain when the pattern is visible. Users log habits per day with optional notes, and the dashboard turns that history into streaks, completion rates, and a heatmap calendar. The backend is ASP.NET Core 8 in a layered Controllers to Services to Repositories structure with FluentValidation on input and a global exception middleware, and the auth flow is deliberately more careful than a personal project needs: short-lived access tokens held in memory, opaque refresh tokens stored SHA-256 hashed behind an HttpOnly cookie.",
+    features: [
+      "Per-day habit logging with notes and calendar visualisation",
+      "Streak tracking with completion-rate and distribution analytics",
+      "Weekly, monthly, and yearly trend charts",
+      "Dashboard KPI cards and heatmap calendar",
+      "Goal configuration by value, unit, and frequency",
+      "JWT access tokens with rotating refresh tokens and password reset",
+      "FluentValidation request validation with global exception handling",
+    ],
+    caseStudy: {
+      context:
+        "Habit tracking is a well-served category, which makes it a good place to practise the parts that are usually skipped in a personal project. The tracking itself is straightforward CRUD; the interesting work is the auth flow and turning a log of check-ins into something a person can read at a glance.",
+      challenge:
+        "Storing a JWT in localStorage is the common shortcut and it leaves the token readable by any script on the page. Avoiding that means the access token cannot be persisted at all, which raises the harder question of how a session survives a page refresh without reintroducing the same exposure.",
+      approach:
+        "Access tokens live in memory only and expire in an hour. Refresh tokens are opaque, valid for seven days, stored SHA-256 hashed server-side, and sent in an HttpOnly, Secure, SameSite=Strict cookie so client JavaScript cannot read them. A refresh rotates the token rather than reusing it. The backend keeps a layered Controllers to Services to Repositories split, with FluentValidation at the boundary and a global exception middleware so error shape stays uniform behind the ApiResponse envelope.",
+      outcome:
+        "Sessions survive a refresh without a readable token anywhere in the browser, and the analytics turn raw check-ins into streaks and completion trends. Role and permission tables are modelled but enforcement is still on the roadmap.",
+    },
+    architecture: {
+      summary:
+        "A conventional layered API, with the auth path as the part worth drawing: the access token never touches storage, and the refresh token never touches JavaScript.",
+      nodes: [
+        { id: "spa", label: "React 19 SPA", sub: "in-memory token", group: "source" },
+        { id: "api", label: "Controllers", sub: "FluentValidation", group: "service" },
+        { id: "svc", label: "Services", sub: "domain logic", group: "service" },
+        { id: "repo", label: "Repositories", sub: "EF Core 9", group: "store" },
+        { id: "db", label: "SQL Server", sub: "hashed refresh", group: "target" },
+      ],
+      edges: [
+        { from: "spa", to: "api", label: "REST + cookie" },
+        { from: "api", to: "svc", label: "delegate" },
+        { from: "svc", to: "repo", label: "persist" },
+        { from: "repo", to: "db", label: "EF Core" },
+      ],
+      decisions: [
+        {
+          title: "Access token in memory, refresh token in an HttpOnly cookie",
+          detail:
+            "localStorage is readable by any script on the page, so a single XSS gives away the session. Keeping the access token in memory and the refresh token in an HttpOnly cookie means neither is reachable from JavaScript; the tradeoff is that a page refresh needs a round trip to rebuild the session.",
+        },
+      ],
+    },
+    businessValue: {
+      metrics: [
+        { value: "1h", label: "access token lifetime" },
+        { value: "0", label: "tokens readable by JavaScript" },
+      ],
+      narrative:
+        "The tracking features are the visible half; the half worth reviewing is a session design that treats a personal side project as if the token actually mattered.",
+    },
     githubUrl: "https://github.com/mpuntodewof/DailyHabitApps",
     headerGradient: ["339 84% 55%", "263 70% 50%"],
+  },
+  {
+    slug: "meal-planner",
+    title: "Meal Planner",
+    type: "Full-Stack Application",
+    problem: "Meal planning breaks down at the point where ideas have to become a shopping list",
+    impact: "AI recipe generation with nutrition estimates, auto-derived shopping lists, and planning analytics",
+    stack: [
+      "React 18",
+      "TypeScript",
+      "Redux Toolkit",
+      "RTK Query",
+      "ASP.NET Core 8",
+      "EF Core",
+      "MySQL 8",
+      "Docker",
+    ],
+    overview:
+      "A full-stack meal planning platform where users build weekly plans, generate recipes through an LLM, get nutrition estimated per serving, and have shopping lists derived automatically from what they planned. The frontend is React 18 with Redux Toolkit and RTK Query served through nginx; the backend is ASP.NET Core 8 with controllers delegating to focused helper classes behind a consistent ApiResponse envelope. The AI integration is the part that needed the most care: LLM providers fail in ordinary ways — rate limits, exhausted credits, server errors — so requests run through a fallback chain that retries across models rather than surfacing the failure to the user.",
+    features: [
+      "AI recipe generation with per-serving nutrition estimation",
+      "Weekly planning by date and meal slot",
+      "Shopping lists derived automatically from planned recipes",
+      "Ratings, favourites, and aggregate recipe summaries",
+      "Dashboard analytics: meals per week, category mix, recipe variety, nutrition trends",
+      "JWT auth with role-based access and email password reset",
+      "Cloudinary image hosting and SMTP delivery",
+      "Docker Compose for local development, GitHub Actions CI",
+    ],
+    caseStudy: {
+      context:
+        "Meal planning apps usually stop at letting you save recipes. The work that actually gets skipped is the boring connective part: knowing what a week of meals implies for a shopping trip, and getting a recipe in the first place when you have no idea what to cook.",
+      challenge:
+        "Depending on an LLM makes an external service a hard dependency in a user-facing path. Providers rate-limit, run out of credit, and return 5xx, and any of those turns into a dead end at the exact moment the user asked for something. A single provider and a single model is a single point of failure for the feature that most distinguishes the product.",
+      approach:
+        "Recipe generation runs through a fallback runner that chains multiple models and retries on the failures that are worth retrying — 429 rate limits, 402 credit errors, and 5xx — moving to the next model rather than returning an error. The chain and the model-list parser are unit tested, because this is logic whose failure mode is invisible until a provider misbehaves in production. Elsewhere the API keeps a single ApiResponse envelope so the frontend unwraps responses at one boundary instead of per call.",
+      outcome:
+        "Recipe generation survives an individual provider degrading. Shopping lists fall out of the weekly plan rather than being maintained separately, and the dashboard reports planning behaviour back to the user as weekly buckets, variety banding, and nutrition trends.",
+    },
+    architecture: {
+      summary:
+        "A three-tier layout where the API fans out to three independent downstream services. The LLM branch is the one that needed a retry strategy, since it is the only dependency that fails routinely under normal operation.",
+      nodes: [
+        { id: "spa", label: "React SPA", sub: "RTK Query, nginx", group: "source" },
+        { id: "api", label: "ASP.NET Core 8", sub: "controllers, helpers", group: "service" },
+        { id: "mysql", label: "MySQL 8", sub: "EF Core", group: "target" },
+        { id: "llm", label: "LLM Provider", sub: "fallback chain", group: "target" },
+        { id: "cloud", label: "Cloudinary", sub: "recipe images", group: "target" },
+      ],
+      edges: [
+        { from: "spa", to: "api", label: "HTTP / JSON" },
+        { from: "api", to: "mysql", label: "persist" },
+        { from: "api", to: "llm", label: "generate" },
+        { from: "api", to: "cloud", label: "upload" },
+      ],
+      decisions: [
+        {
+          title: "Model fallback chain instead of a single provider",
+          detail:
+            "An LLM call is the one dependency that fails routinely rather than exceptionally. Chaining models and retrying on 429, 402, and 5xx converts the common failures into latency instead of an error, and keeps the feature usable when one provider degrades.",
+        },
+        {
+          title: "One ApiResponse envelope across every endpoint",
+          detail:
+            "A uniform envelope carrying status, result, and errors means the frontend unwraps responses and handles failures at a single boundary rather than repeating that logic in every RTK Query module.",
+        },
+      ],
+    },
+    businessValue: {
+      metrics: [
+        { value: "4", label: "external services orchestrated" },
+        { value: "1-click", label: "cloud deploy via blueprint" },
+      ],
+      narrative:
+        "The distinguishing work here is not the AI call itself but everything around it: making an unreliable external dependency behave predictably, and turning a week of planned meals into a shopping list without asking the user to maintain one.",
+    },
+    githubUrl: "https://github.com/mpuntodewof/Meal-Planner-Apps",
+    headerGradient: ["25 95% 53%", "45 93% 47%"],
   },
 ];
 

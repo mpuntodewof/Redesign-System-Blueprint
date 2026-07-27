@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import ProjectDetail from "./ProjectDetail";
-import type { Project } from "@/data/projects";
+import projects, { type Project } from "@/data/projects";
 
 vi.mock("@/data/projects", async () => {
   const actual = await vi.importActual<{ default: Project[] }>("@/data/projects");
@@ -55,7 +55,14 @@ describe("ProjectDetail GitHub card", () => {
 
 describe("ProjectDetail optional sections", () => {
   it("renders only the baseline sections when no optional fields are present", () => {
-    renderProject("habit-tracker");
+    // Found rather than hardcoded: naming a project here means the test breaks
+    // the day that project gains content, which is a stale fixture rather than
+    // a real regression. This is the only guard on the optional-field fallback.
+    const bare = projects.find(
+      (p) => p.clickable !== false && !p.caseStudy && !p.architecture && !p.businessValue
+    );
+    if (!bare) throw new Error("every clickable project now has optional content");
+    renderProject(bare.slug);
     expect(screen.getByRole("heading", { name: "Project Overview" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Key Features" })).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Case Study" })).not.toBeInTheDocument();
