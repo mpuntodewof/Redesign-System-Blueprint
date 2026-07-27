@@ -164,6 +164,13 @@ were added inline. New sections are extracted to `src/components/project/`:
 `ProjectDetail.tsx` becomes a thin composition: fetch project by slug, render header,
 sidebar, and conditionally each section.
 
+One existing behavior must change: the sidebar currently renders the GitHub card
+unconditionally, so a project with an empty `githubUrl` would show a card linking
+nowhere. The card must render only when `githubUrl` is a non-empty string. This is
+required by the Banking Middleware no-source-link rule below, and also fixes the two
+`clickable: false` projects (E-MOC, E-Credit), which already carry empty `githubUrl`
+values.
+
 `ArchitectureDiagram.tsx` is the only component with non-trivial logic — it computes
 layout positions from a node graph. It is isolated for that reason and is the one
 component here that warrants unit tests.
@@ -218,14 +225,43 @@ Both flagship projects are named employer systems: a bank and a listed transport
 Published architecture diagrams must stay at the component level one would draw on a
 whiteboard during a job interview.
 
-Explicitly excluded from all published content:
+Excluded from all published content, both projects:
 
 - Internal hostnames, IP ranges, and environment names.
 - Vendor-specific endpoint paths and integration credentials.
 - Database table schemas and column-level detail.
 - Authentication and authorization mechanisms.
 
-The Bank Raya material should be reviewed for clearance before publication.
+#### Banking Middleware APIs — generalized treatment
+
+This project is published at a strictly higher level of abstraction than the others. No
+source is linked and no implementation detail is described. The case study covers the
+*class* of problem and the author's role in solving it, not the specifics of PT Bank
+Raya's system.
+
+Binding rules:
+
+- **No source link.** `githubUrl` stays empty; the sidebar GitHub card does not render.
+  (The field currently points at the author's GitHub profile root rather than a
+  repository, so nothing is exposed today — this makes that deliberate rather than
+  incidental.)
+- **Generic node labels.** The architecture diagram describes a payment-middleware
+  pattern in generic terms — "Channel Layer", "Transaction Middleware", "Core Banking",
+  "Clearing Network". No node names an internal service, vendor product, or proprietary
+  component.
+- **Pattern-level narrative.** Case study prose describes how one approaches real-time
+  interbank transaction processing — idempotency, reconciliation, validation under peak
+  load — rather than how PT Bank Raya specifically implemented it.
+- **Metrics only where already public.** Transaction volumes and cardholder counts are
+  retained because they already appear on the site's public Experience section and on
+  LinkedIn. No new figures are introduced.
+
+The test to apply to any sentence in this case study: could a competent engineer who had
+never seen the system have written it from domain knowledge alone? If not, it is too
+specific.
+
+This replaces any clearance-review step. The constraint is structural, so it holds
+without depending on a review that might be skipped.
 
 ## Testing
 
@@ -235,6 +271,9 @@ The Bank Raya material should be reviewed for clearance before publication.
 - `ProjectDetail.tsx` — rendering tests confirming that a project with no optional fields
   renders exactly today's sections, and that each optional field independently adds its
   section.
+- `ProjectDetail.tsx` — the GitHub card renders for a non-empty `githubUrl` and is absent
+  for an empty one. This guards a confidentiality rule, not just a layout preference, so
+  it is not optional.
 Current state: Vitest is configured (`vitest.config.ts`, `src/test/setup.ts`) but
 `package.json` defines no `test` script and `src/test/example.test.ts` is a placeholder.
 There is no existing suite to regress against, so the rendering tests above are the only
@@ -265,24 +304,62 @@ Four proposed offerings, ordered by defensibility:
 category on every freelance marketplace and the portfolio's weakest differentiator.
 Full-stack capability is better mentioned inside the other offers than sold as its own.
 
-Two inputs are still required before service copy can be written, and are deliberately
-deferred:
+### Target market: both local and international
 
-- Target market — Indonesian/ASEAN local clients, or international remote.
-- Whether pricing signals appear on the page at all.
+The offers target ASEAN clients and international remote clients simultaneously.
+
+The risk in serving both is copy that hedges — writing for everyone and landing with no
+one. The mitigation is to keep the four offers themselves market-neutral (a payroll
+integration is described the same way in Jakarta and Berlin) and to confine
+market-reaching signals to a small number of deliberate places:
+
+- One line in the Services intro establishing remote delivery and timezone posture,
+  rather than qualifying each offer separately.
+- Domain credibility phrased by *sector* — banking, transport, pharmaceutical, logistics —
+  rather than by country. Sector reads as relevant everywhere; "ASEAN" reads as a
+  limitation to a European client and as redundant to a local one.
+- Existing regional proof points (BI-FAST, multi-branch ASEAN rollouts) retained as
+  evidence of regulated-environment experience, not as geographic scope.
+
+No separate landing pages, no market toggle, no duplicated copy. One set of offers.
+
+### Pricing: contact form only
+
+No pricing signals appear anywhere on the site — no day rate, no project minimum, no
+"from $X" anchors, no ranges. All pricing conversation routes through the existing
+contact flow (`ContactFormDialog.tsx`).
+
+This follows from serving both markets: a single published figure cannot be
+simultaneously right for an ASEAN SME and a European enterprise, and whichever it suits
+it will mis-signal to the other. Withholding it keeps the first conversation about scope.
+
+Implication for CTA copy: every service CTA leads to a conversation, not a quote.
+Language such as "Get a quote" or "See pricing" is not used, since neither is available.
+The existing "Start a Project" CTA already fits.
 
 ## Sequencing
 
 1. Schema extension and component extraction, with tests. Unblocks everything else.
 2. Flagship interview and content for Talenta → SAP.
-3. Flagship interview and content for Banking Middleware, subject to clearance review.
+3. Flagship interview and content for Banking Middleware, written at pattern level per
+   the generalized-treatment rules.
 4. Services rewrite, once the two case studies exist to cite.
 
 Steps 2 and 3 are independent of each other and both depend only on step 1.
 
+## Resolved Decisions
+
+Settled 2026-07-27:
+
+- **Bank Raya confidentiality** — no clearance review. The project is published at
+  pattern level with no source link and generic architecture labels. See
+  *Banking Middleware APIs — generalized treatment*.
+- **Target market** — both ASEAN and international, served by one market-neutral set of
+  offers rather than segmented copy.
+- **Pricing** — no pricing signals published. All pricing conversation routes through the
+  contact form.
+
 ## Open Questions
 
-- Does the Bank Raya material require formal clearance, and from whom?
-- Target market for the services rewrite: local ASEAN or international remote?
-- Should the page display pricing signals (day rate, project minimum, "from $X"), or
-  route all pricing conversation through the contact form?
+None blocking. The remaining unknowns are content, not design: the flagship interview
+answers for Talenta → SAP, which step 2 gathers.
