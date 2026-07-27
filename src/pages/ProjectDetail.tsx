@@ -121,7 +121,7 @@ const ProjectDetail = () => {
       {/* Content */}
       <section className="py-16">
         <div className="container mx-auto px-6">
-          <div className="max-w-4xl mx-auto grid lg:grid-cols-3 gap-10">
+          <div className="max-w-6xl mx-auto grid lg:grid-cols-3 gap-10">
             {/* Main content - left/center */}
             <div className="lg:col-span-2 space-y-12">
               {/* Project Overview */}
@@ -247,7 +247,7 @@ const ProjectDetail = () => {
           {/* Architecture - full width */}
           {project.architecture && (
             <motion.div
-              className="max-w-4xl mx-auto mt-12"
+              className="max-w-6xl mx-auto mt-12"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}

@@ -6,10 +6,15 @@ import type {
 
 export const GROUP_ORDER: ArchitectureGroup[] = ["source", "service", "store", "target"];
 
-export const NODE_WIDTH = 150;
+/**
+ * SVG <text> does not wrap, so a node is only as legible as its width allows.
+ * 168px holds roughly 20 characters at the 13px label size before the text
+ * reaches the padding; keep labels shorter than that.
+ */
+export const NODE_WIDTH = 168;
 export const NODE_HEIGHT = 64;
-export const COLUMN_GAP = 72;
-export const ROW_GAP = 24;
+export const COLUMN_GAP = 64;
+export const ROW_GAP = 28;
 
 export interface NodeColumn {
   group: ArchitectureGroup;

@@ -46,11 +46,14 @@ const ArchitectureDiagram = ({ data, accent }: ArchitectureDiagramProps) => {
       <p className="text-secondary-foreground leading-relaxed">{data.summary}</p>
 
       {/* Desktop: SVG diagram */}
-      <div className="hidden md:block glass rounded-2xl p-6 overflow-hidden">
+      <div className="hidden md:flex justify-center glass rounded-2xl px-6 py-8 overflow-hidden">
         <svg
           role="img"
           aria-label={diagramLabel}
           viewBox={`${-pad} ${-pad} ${width + pad * 2} ${height + pad * 2}`}
+          // Capping at the diagram's natural size stops `w-full` magnifying the
+          // 13px node text into something oversized on a wide container.
+          style={{ maxWidth: width + pad * 2 }}
           className="w-full h-auto"
         >
           {edges.map((edge, i) => {

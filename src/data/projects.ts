@@ -93,16 +93,16 @@ const projects: Project[] = [
       summary:
         "Talenta pushes HR records to the Receiver Service, which stages them and hands them to SAP through a background worker rather than in the originating request. Staging is what makes the timeouts survivable: a failed SAP write retries from the staged record instead of asking Talenta for the data again.",
       nodes: [
-        { id: "talenta", label: "Talenta", sub: "external HR platform", group: "source" },
+        { id: "talenta", label: "Talenta", sub: "external HR", group: "source" },
         { id: "receiver", label: "Receiver API", sub: ".NET Core", group: "service" },
         { id: "staging", label: "Staging Store", sub: "SQL Server", group: "store" },
-        { id: "worker", label: "Background Worker", sub: "Hangfire, retries", group: "store" },
+        { id: "worker", label: "Worker", sub: "Hangfire", group: "store" },
         { id: "sap", label: "SAP", sub: "via RFC", group: "target" },
       ],
       edges: [
-        { from: "talenta", to: "receiver", label: "shift, overtime, leave" },
+        { from: "talenta", to: "receiver", label: "HR records" },
         { from: "receiver", to: "staging", label: "stage" },
-        { from: "staging", to: "worker", label: "claim batch" },
+        { from: "staging", to: "worker", label: "claim" },
         { from: "worker", to: "sap", label: "batched write" },
       ],
     },
@@ -110,7 +110,6 @@ const projects: Project[] = [
       metrics: [
         { value: "3", label: "HR data domains synchronised" },
         { value: "0", label: "manual re-entry steps" },
-        { value: "Batched", label: "transfers under peak volume" },
       ],
       narrative:
         "The integration removed a standing manual workload from the HR and operations teams and made the data in SAP a reflection of what Talenta actually holds, rather than of how recently someone had time to copy it across.",

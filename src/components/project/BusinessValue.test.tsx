@@ -24,6 +24,20 @@ describe("BusinessValue", () => {
     expect(screen.getByText(data.narrative)).toBeInTheDocument();
   });
 
+  it("matches the column count to the metric count", () => {
+    // A fixed 4-column grid renders three metrics as three tiles and a hole.
+    const three: BusinessValueData = {
+      metrics: [
+        { value: "1", label: "one" },
+        { value: "2", label: "two" },
+        { value: "3", label: "three" },
+      ],
+      narrative: "n",
+    };
+    const { container } = render(<BusinessValue data={three} accent="239 84% 67%" />);
+    expect(container.querySelector(".grid")?.className).toContain("sm:grid-cols-3");
+  });
+
   it("renders at most four metrics", () => {
     const many: BusinessValueData = {
       metrics: [
