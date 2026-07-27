@@ -22,6 +22,14 @@ const ArchitectureDiagram = ({ data, accent }: ArchitectureDiagramProps) => {
   const { width, height } = canvasSize(columns);
   const pad = 16;
 
+  // `role="img"` collapses the SVG subtree, so the <text> node labels inside are
+  // never announced. The mobile stack that does expose them is `display: none` at
+  // this breakpoint and so is absent from the accessibility tree. Describing the
+  // flow in the label is what makes the diagram reachable on desktop.
+  const diagramLabel = `Architecture diagram. ${columns
+    .map((column) => `${column.group}: ${column.nodes.map((node) => node.label).join(", ")}`)
+    .join(". ")}.`;
+
   return (
     <div className="space-y-6">
       <p className="text-secondary-foreground leading-relaxed">{data.summary}</p>
@@ -30,7 +38,7 @@ const ArchitectureDiagram = ({ data, accent }: ArchitectureDiagramProps) => {
       <div className="hidden md:block glass rounded-2xl p-6 overflow-hidden">
         <svg
           role="img"
-          aria-label="Architecture diagram"
+          aria-label={diagramLabel}
           viewBox={`${-pad} ${-pad} ${width + pad * 2} ${height + pad * 2}`}
           className="w-full h-auto"
         >

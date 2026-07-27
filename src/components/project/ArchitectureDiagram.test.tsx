@@ -26,6 +26,18 @@ describe("ArchitectureDiagram", () => {
     expect(screen.getByText(data.summary)).toBeInTheDocument();
   });
 
+  it("names every node in the SVG accessible label", () => {
+    // role="img" hides the SVG's inner <text> from assistive tech, and the mobile
+    // stack is display:none at this breakpoint, so the label is the only way a
+    // desktop screen-reader user reaches the node names.
+    render(<ArchitectureDiagram data={data} accent="239 84% 67%" />);
+    const label = screen.getByRole("img").getAttribute("aria-label") ?? "";
+    expect(label).toContain("HR Platform");
+    expect(label).toContain("Receiver API");
+    expect(label).toContain("Staging Store");
+    expect(label).toContain("SAP");
+  });
+
   it("renders every node label in the mobile stack", () => {
     render(<ArchitectureDiagram data={data} accent="239 84% 67%" />);
     const stack = screen.getByTestId("architecture-stack");
