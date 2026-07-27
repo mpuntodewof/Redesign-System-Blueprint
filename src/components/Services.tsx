@@ -2,11 +2,23 @@ import { motion } from "framer-motion";
 
 const services = [
   {
-    title: "Backend & API Development",
+    title: "Enterprise System Integration",
     badge: "Core Strength",
-    problem: "Complex business logic scattered across fragile systems",
-    solution: "Clean, scalable REST APIs and microservices with .NET Core",
-    outcome: "Reliable backends handling 1000+ daily transactions",
+    problem: "Two systems hold the same data and neither agrees with the other",
+    solution: "Middleware that owns the timing — staged transfers, retries, and a negotiated contract between both sides",
+    outcome: "SAP and HR platform integrations carrying payroll-grade data without manual re-entry",
+    icon: (
+      <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" className="text-primary">
+        <circle cx="12" cy="12" r="3" /><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+      </svg>
+    ),
+  },
+  {
+    title: "Backend & API Development",
+    badge: ".NET Core",
+    problem: "Business logic scattered across a codebase nobody wants to change",
+    solution: "Layered .NET services with a clean repository split, OpenAPI contracts, and background processing",
+    outcome: "Backends that survive peak load and stay legible to the next developer",
     icon: (
       <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" className="text-primary">
         <path d="M5 12h14M12 5l7 7-7 7" /><rect x="2" y="3" width="20" height="18" rx="3" />
@@ -15,38 +27,26 @@ const services = [
     ),
   },
   {
-    title: "Full-Stack Web Applications",
-    badge: "End-to-End",
-    problem: "Need a complete product but backend and frontend don't align",
-    solution: "Unified full-stack development with React + .NET Core",
-    outcome: "Cohesive apps with seamless user experiences",
-    icon: (
-      <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" className="text-primary">
-        <rect x="2" y="3" width="20" height="14" rx="2" /><path d="M8 21h8M12 17v4" />
-      </svg>
-    ),
-  },
-  {
-    title: "System Integration",
-    badge: "SAP & APIs",
-    problem: "Disconnected enterprise systems causing data silos",
-    solution: "Robust integrations connecting SAP, Talenta, and third-party APIs",
-    outcome: "Automated workflows eliminating manual data entry",
-    icon: (
-      <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" className="text-primary">
-        <circle cx="12" cy="12" r="3" /><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-      </svg>
-    ),
-  },
-  {
-    title: "Performance Optimization",
-    badge: "Speed & Scale",
-    problem: "Slow queries and bottlenecks degrading user experience",
-    solution: "Database tuning, query optimization, and caching strategies",
-    outcome: "40% error reduction and dramatically faster response times",
+    title: "Legacy Modernisation & Performance",
+    badge: "Audit & Fix",
+    problem: "Slow queries and silent failures you have learned to work around",
+    solution: "An audit first, then targeted query tuning, fault handling, and retry logic where it actually pays",
+    outcome: "Measured error reduction and systems that hold up under peak-hour load",
     icon: (
       <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" className="text-primary">
         <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+      </svg>
+    ),
+  },
+  {
+    title: "Workflow & Approval Automation",
+    badge: "Repeatable",
+    problem: "Approvals live in email and spreadsheets, and no one can prove what was agreed",
+    solution: "Multi-level approval flows with validation rules, state machines, and an immutable audit trail",
+    outcome: "Timesheet, credit, and change-management systems delivered across four organisations",
+    icon: (
+      <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" className="text-primary">
+        <rect x="2" y="3" width="20" height="14" rx="2" /><path d="M8 21h8M12 17v4" />
       </svg>
     ),
   },
@@ -67,7 +67,8 @@ const Services = () => {
             What I Can <span className="gradient-text">Build For You</span>
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            From scalable backends to complete full-stack applications — solutions engineered for real business impact.
+            Backend and integration work for teams in banking, transport, pharmaceutical, and
+            logistics — delivered remotely, with overlap across Asia-Pacific and European hours.
           </p>
         </motion.div>
 
@@ -81,15 +82,17 @@ const Services = () => {
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
             >
-              <div className="flex items-start justify-between mb-4">
-                <div className="p-3 rounded-xl bg-primary/10 border border-primary/20">
+              <div className="flex items-center gap-4 mb-5">
+                <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 shrink-0">
                   {service.icon}
                 </div>
-                <span className="text-xs font-heading font-semibold text-primary bg-primary/10 rounded-full px-3 py-1">
+                <h3 className="font-heading text-xl font-semibold leading-tight flex-1">
+                  {service.title}
+                </h3>
+                <span className="text-xs font-heading font-semibold text-primary bg-primary/10 rounded-full px-3 py-1 shrink-0 self-start">
                   {service.badge}
                 </span>
               </div>
-              <h3 className="font-heading text-xl font-semibold mb-4">{service.title}</h3>
               <div className="space-y-3 text-sm">
                 <div className="flex gap-3">
                   <span className="text-red-400 mt-0.5">✕</span>
