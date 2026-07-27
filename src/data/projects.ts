@@ -25,10 +25,24 @@ export interface ArchitectureDecision {
   detail: string;
 }
 
+/**
+ * One numbered step in the request flow, rendered beneath the diagram. The
+ * diagram shows what connects to what; these explain what happens at each hop
+ * and why. SVG text does not wrap, so this detail cannot live in the node
+ * labels.
+ */
+export interface ArchitectureStep {
+  /** Short name for the stage, e.g. "Receive". */
+  title: string;
+  /** What happens here, and what it guarantees for the next step. */
+  detail: string;
+}
+
 export interface Architecture {
   summary: string;
   nodes: ArchitectureNode[];
   edges: ArchitectureEdge[];
+  flow?: ArchitectureStep[];
   decisions?: ArchitectureDecision[];
 }
 
@@ -105,6 +119,33 @@ const projects: Project[] = [
         { from: "staging", to: "worker", label: "claim" },
         { from: "worker", to: "sap", label: "batched write" },
       ],
+      flow: [
+        {
+          title: "Talenta submits HR records",
+          detail:
+            "The vendor platform pushes driver shift schedules, overtime, and time-off as they change. Volume is uneven — a single day's shift data for a driver fleet is far larger than a handful of leave requests — so the receiving end cannot assume a small payload.",
+        },
+        {
+          title: "Receiver API validates and acknowledges",
+          detail:
+            "The request is validated against the agreed contract and accepted. Acknowledgement happens here rather than after SAP has been written, which is what keeps Talenta's request inside its own response window instead of waiting on a downstream system it does not control.",
+        },
+        {
+          title: "Records are staged before anything is forwarded",
+          detail:
+            "Accepted data is persisted to SQL Server first. This is the pivot the whole design rests on: once a record is staged, the transfer to SAP can be retried from local storage, so a failure never means going back to Talenta to ask for the data again.",
+        },
+        {
+          title: "A background worker claims a batch",
+          detail:
+            "Hangfire jobs pick up staged records on a configurable schedule and group them into batches sized for what SAP will accept. Because this runs outside any HTTP request, a slow batch delays only itself rather than timing out a caller.",
+        },
+        {
+          title: "The batch is written to SAP over RFC",
+          detail:
+            "Each batch is posted through SAP's RFC interface. A failure marks the records for retry rather than discarding them, and every attempt is logged so a discrepancy can be traced back to the specific record that caused it.",
+        },
+      ],
     },
     businessValue: {
       metrics: [
@@ -180,6 +221,33 @@ const projects: Project[] = [
         { from: "middleware", to: "ledger", label: "record first" },
         { from: "ledger", to: "core", label: "paired posting" },
         { from: "ledger", to: "clearing", label: "settle" },
+      ],
+      flow: [
+        {
+          title: "A channel submits a transfer instruction",
+          detail:
+            "Web or mobile banking sends the transfer with its own transaction identifier. Because channels retry on timeout, the middleware must treat every arrival as possibly a duplicate of one it has already processed.",
+        },
+        {
+          title: "The instruction is validated and checked for prior arrival",
+          detail:
+            "Field validation runs first, then the identifier is checked against what has already been seen. This is the step that separates a genuine second transfer from a retry of the first — the two are otherwise indistinguishable.",
+        },
+        {
+          title: "The transaction is recorded before any money moves",
+          detail:
+            "Writing the record before contacting downstream systems is what makes a retry answerable: on a repeat arrival there is already something to consult. Dispatching first would leave a window where money has moved with no local record of it.",
+        },
+        {
+          title: "Debit and credit are posted as one outcome",
+          detail:
+            "The paired postings are written together so partial application is not representable. A debit without its credit loses customer money; a credit without its debit creates money. Neither state can exist as an intermediate.",
+        },
+        {
+          title: "Settlement goes to the clearing network",
+          detail:
+            "Only once the transaction is durably recorded and posted does it reach the interbank network. Every attempt is logged for reconciliation, which is what makes end-of-day matching and audit possible after the fact.",
+        },
       ],
       decisions: [
         {
@@ -299,6 +367,33 @@ const projects: Project[] = [
         { from: "app", to: "domain", label: "depends on" },
         { from: "infra", to: "db", label: "EF Core" },
       ],
+      flow: [
+        {
+          title: "Blazor calls the API with a tenant-scoped token",
+          detail:
+            "The front end sends a JWT that carries the tenant identity. Every request that follows is bound to that tenant — the client never supplies a TenantId it could tamper with.",
+        },
+        {
+          title: "Controllers delegate rather than decide",
+          detail:
+            "The 19 controllers handle HTTP concerns and hand off immediately. Keeping business rules out of the controller is what allows the same use case to be driven by a test without going through the web layer.",
+        },
+        {
+          title: "Application use cases orchestrate domain entities",
+          detail:
+            "Use cases coordinate the work and map to DTOs, while the domain holds the rules — a journal must balance, a purchase order cannot skip approval. The domain layer has zero outward dependencies, so those rules do not know that EF Core or MySQL exist.",
+        },
+        {
+          title: "Infrastructure applies the tenant filter on every query",
+          detail:
+            "A global query filter on TenantId is applied at the EF Core level rather than in each query. Isolation therefore holds by default: a developer writing a new query cannot forget it, because there is nothing to remember.",
+        },
+        {
+          title: "Stock and finance are written from the same event",
+          detail:
+            "A goods receipt appends to the immutable stock ledger and posts its balanced journal entry together. Because neither can be written without the other, the warehouse and the books cannot silently drift apart.",
+        },
+      ],
       decisions: [
         {
           title: "Append-only stock ledger over a quantity column",
@@ -377,6 +472,33 @@ const projects: Project[] = [
         { from: "svc", to: "repo", label: "persist" },
         { from: "repo", to: "db", label: "EF Core" },
       ],
+      flow: [
+        {
+          title: "The SPA sends an in-memory access token",
+          detail:
+            "The access token lives in a JavaScript variable and nowhere else — not localStorage, not sessionStorage. It expires after an hour. The tradeoff is that a page refresh loses it, which the next step exists to handle.",
+        },
+        {
+          title: "A refresh rebuilds the session from an HttpOnly cookie",
+          detail:
+            "The refresh token travels in an HttpOnly, Secure, SameSite=Strict cookie the browser sends automatically and page scripts cannot read. The server compares its SHA-256 hash, issues a new access token, and rotates the refresh token so the previous one stops working.",
+        },
+        {
+          title: "Controllers validate before anything else runs",
+          detail:
+            "FluentValidation rejects malformed requests at the boundary, so services can assume their input is well-formed. A global exception middleware catches whatever escapes, keeping every error response in the same ApiResponse shape.",
+        },
+        {
+          title: "Services compute streaks and completion rates",
+          detail:
+            "Domain logic turns a flat list of daily check-ins into the derived values the dashboard needs — current and longest streaks, completion percentages, and weekly, monthly, and yearly distributions.",
+        },
+        {
+          title: "Repositories persist through EF Core",
+          detail:
+            "Data access sits behind repository interfaces, so services depend on an abstraction rather than on EF Core directly. Refresh tokens are stored hashed, so a database leak does not hand over usable sessions.",
+        },
+      ],
       decisions: [
         {
           title: "Access token in memory, refresh token in an HttpOnly cookie",
@@ -449,6 +571,33 @@ const projects: Project[] = [
         { from: "api", to: "mysql", label: "persist" },
         { from: "api", to: "llm", label: "generate" },
         { from: "api", to: "cloud", label: "upload" },
+      ],
+      flow: [
+        {
+          title: "RTK Query calls the API through nginx",
+          detail:
+            "The React SPA is served by nginx, and its RTK Query modules share one configurable origin. Caching and request deduplication are handled by RTK Query rather than written by hand per endpoint.",
+        },
+        {
+          title: "Controllers delegate to focused helpers",
+          detail:
+            "Each controller hands off to a helper with a single concern — dashboard aggregation, shopping list derivation, AI recipe generation. That separation is what makes the aggregation and fallback logic unit-testable without an HTTP request.",
+        },
+        {
+          title: "Recipe generation walks the model fallback chain",
+          detail:
+            "The first model is attempted; on a 429 rate limit, a 402 credit error, or any 5xx, the runner moves to the next model rather than returning an error. A provider degrading becomes added latency instead of a failed feature.",
+        },
+        {
+          title: "Nutrition and shopping lists are derived, not entered",
+          detail:
+            "Nutrition is estimated per serving from the generated recipe, and shopping lists are computed from whatever is currently on the weekly plan. Neither is a field the user maintains, so neither can fall out of sync with the plan.",
+        },
+        {
+          title: "Responses return in one ApiResponse envelope",
+          detail:
+            "Every endpoint returns the same envelope carrying status, result, and errors, so the front end unwraps responses and handles failures at a single boundary instead of repeating that logic in each query module.",
+        },
       ],
       decisions: [
         {

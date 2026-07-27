@@ -154,6 +154,34 @@ const ArchitectureDiagram = ({ data, accent }: ArchitectureDiagramProps) => {
         ))}
       </div>
 
+      {data.flow && data.flow.length > 0 && (
+        <div>
+          <h3 className="font-heading text-sm font-semibold tracking-widest uppercase text-muted-foreground mb-4">
+            How a Request Flows
+          </h3>
+          <ol className="space-y-4">
+            {data.flow.map((step, index) => (
+              <li key={step.title} className="flex gap-4">
+                <span
+                  className="font-heading text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shrink-0 mt-0.5"
+                  style={{
+                    backgroundColor: `hsl(${accent} / 0.15)`,
+                    color: `hsl(${accent})`,
+                  }}
+                  aria-hidden="true"
+                >
+                  {index + 1}
+                </span>
+                <div>
+                  <p className="font-heading text-sm font-semibold mb-1">{step.title}</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{step.detail}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
+
       {data.decisions && data.decisions.length > 0 && (
         <div>
           <h3 className="font-heading text-sm font-semibold tracking-widest uppercase text-muted-foreground mb-3">

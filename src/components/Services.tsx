@@ -82,15 +82,17 @@ const Services = () => {
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
             >
-              <div className="flex items-start justify-between mb-4">
-                <div className="p-3 rounded-xl bg-primary/10 border border-primary/20">
+              <div className="flex items-center gap-4 mb-5">
+                <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 shrink-0">
                   {service.icon}
                 </div>
-                <span className="text-xs font-heading font-semibold text-primary bg-primary/10 rounded-full px-3 py-1">
+                <h3 className="font-heading text-xl font-semibold leading-tight flex-1">
+                  {service.title}
+                </h3>
+                <span className="text-xs font-heading font-semibold text-primary bg-primary/10 rounded-full px-3 py-1 shrink-0 self-start">
                   {service.badge}
                 </span>
               </div>
-              <h3 className="font-heading text-xl font-semibold mb-4">{service.title}</h3>
               <div className="space-y-3 text-sm">
                 <div className="flex gap-3">
                   <span className="text-red-400 mt-0.5">✕</span>

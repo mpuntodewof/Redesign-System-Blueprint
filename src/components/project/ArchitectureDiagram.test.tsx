@@ -52,6 +52,30 @@ describe("ArchitectureDiagram", () => {
     expect(screen.getByTestId("architecture-stack")).toHaveTextContent(".NET Core");
   });
 
+  it("renders numbered flow steps when present", () => {
+    const withFlow: Architecture = {
+      ...data,
+      flow: [
+        { title: "Receive", detail: "The request arrives and is validated." },
+        { title: "Persist", detail: "The record is staged before forwarding." },
+      ],
+    };
+    render(<ArchitectureDiagram data={withFlow} accent="239 84% 67%" />);
+    expect(screen.getByText("How a Request Flows")).toBeInTheDocument();
+    expect(screen.getByText("Receive")).toBeInTheDocument();
+    expect(screen.getByText("The request arrives and is validated.")).toBeInTheDocument();
+    expect(screen.getByText("Persist")).toBeInTheDocument();
+    // Numbered in order, so the reader can follow the diagram against the list.
+    const steps = screen.getAllByRole("listitem").map((li) => li.textContent ?? "");
+    expect(steps[0]).toContain("1");
+    expect(steps[1]).toContain("2");
+  });
+
+  it("omits the flow list when absent", () => {
+    render(<ArchitectureDiagram data={data} accent="239 84% 67%" />);
+    expect(screen.queryByText("How a Request Flows")).not.toBeInTheDocument();
+  });
+
   it("renders decisions when present", () => {
     render(<ArchitectureDiagram data={data} accent="239 84% 67%" />);
     expect(screen.getByText("Queued writes")).toBeInTheDocument();
