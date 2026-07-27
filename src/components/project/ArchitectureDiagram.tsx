@@ -4,6 +4,7 @@ import {
   NODE_WIDTH,
   canvasSize,
   computePositions,
+  findDanglingEdgeIds,
   groupNodes,
   resolveEdges,
 } from "./layout";
@@ -21,6 +22,16 @@ const ArchitectureDiagram = ({ data, accent }: ArchitectureDiagramProps) => {
   const edges = resolveEdges(data.edges, positions);
   const { width, height } = canvasSize(columns);
   const pad = 16;
+
+  if (import.meta.env.DEV) {
+    const dangling = findDanglingEdgeIds(data.edges, data.nodes);
+    if (dangling.length > 0) {
+      console.warn(
+        `ArchitectureDiagram: edge references no matching node id: ${dangling.join(", ")}. ` +
+          `Those connections will not be drawn. Known ids: ${data.nodes.map((n) => n.id).join(", ")}.`
+      );
+    }
+  }
 
   // `role="img"` collapses the SVG subtree, so the <text> node labels inside are
   // never announced. The mobile stack that does expose them is `display: none` at

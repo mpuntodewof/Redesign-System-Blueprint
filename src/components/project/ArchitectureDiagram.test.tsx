@@ -68,6 +68,25 @@ describe("ArchitectureDiagram", () => {
     expect(screen.queryByText("Key Decisions")).not.toBeInTheDocument();
   });
 
+  it("warns naming the unresolved id when an edge references an unknown node", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const typo: Architecture = {
+      ...data,
+      edges: [{ from: "hr", to: "recevier" }],
+    };
+    render(<ArchitectureDiagram data={typo} accent="239 84% 67%" />);
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn.mock.calls[0][0]).toContain("recevier");
+    warn.mockRestore();
+  });
+
+  it("does not warn when every edge resolves", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    render(<ArchitectureDiagram data={data} accent="239 84% 67%" />);
+    expect(warn).not.toHaveBeenCalled();
+    warn.mockRestore();
+  });
+
   it("renders nothing when there are no nodes", () => {
     const empty: Architecture = { summary: "s", nodes: [], edges: [] };
     const { container } = render(<ArchitectureDiagram data={empty} accent="239 84% 67%" />);

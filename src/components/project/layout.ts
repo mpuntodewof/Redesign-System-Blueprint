@@ -76,6 +76,27 @@ export function resolveEdges(
     }));
 }
 
+/**
+ * Edge endpoints that match no node id. `resolveEdges` drops these silently so a
+ * typo cannot break the diagram, but a dropped edge is invisible — the connection
+ * simply never appears. Content is hand-written, so surfacing the bad ids is what
+ * makes the typo findable.
+ */
+export function findDanglingEdgeIds(
+  edges: ArchitectureEdge[],
+  nodes: ArchitectureNode[]
+): string[] {
+  const known = new Set(nodes.map((node) => node.id));
+  const dangling = new Set<string>();
+
+  edges.forEach((edge) => {
+    if (!known.has(edge.from)) dangling.add(edge.from);
+    if (!known.has(edge.to)) dangling.add(edge.to);
+  });
+
+  return [...dangling];
+}
+
 /** Total canvas size needed for a set of columns. */
 export function canvasSize(columns: NodeColumn[]): { width: number; height: number } {
   const tallest = Math.max(0, ...columns.map((c) => c.nodes.length));

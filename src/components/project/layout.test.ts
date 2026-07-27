@@ -1,4 +1,10 @@
-import { groupNodes, computePositions, resolveEdges, GROUP_ORDER } from "./layout";
+import {
+  groupNodes,
+  computePositions,
+  resolveEdges,
+  findDanglingEdgeIds,
+  GROUP_ORDER,
+} from "./layout";
 import type { ArchitectureNode, ArchitectureEdge } from "@/data/projects";
 
 const nodes: ArchitectureNode[] = [
@@ -67,6 +73,32 @@ describe("resolveEdges", () => {
       { from: "ghost", to: "d" },
     ];
     expect(resolveEdges(edges, positions)).toHaveLength(1);
+  });
+});
+
+describe("findDanglingEdgeIds", () => {
+  it("returns nothing when every endpoint resolves", () => {
+    const edges: ArchitectureEdge[] = [
+      { from: "a", to: "b" },
+      { from: "b", to: "d" },
+    ];
+    expect(findDanglingEdgeIds(edges, nodes)).toEqual([]);
+  });
+
+  it("reports an unknown id on either end", () => {
+    const edges: ArchitectureEdge[] = [
+      { from: "a", to: "ghost" },
+      { from: "phantom", to: "d" },
+    ];
+    expect(findDanglingEdgeIds(edges, nodes).sort()).toEqual(["ghost", "phantom"]);
+  });
+
+  it("reports each unknown id once", () => {
+    const edges: ArchitectureEdge[] = [
+      { from: "a", to: "ghost" },
+      { from: "ghost", to: "d" },
+    ];
+    expect(findDanglingEdgeIds(edges, nodes)).toEqual(["ghost"]);
   });
 });
 
