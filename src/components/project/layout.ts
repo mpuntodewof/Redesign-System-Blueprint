@@ -25,6 +25,12 @@ export interface ResolvedEdge {
   from: Position;
   to: Position;
   label?: string;
+  /**
+   * True when both endpoints sit in the same column. Such an edge leaves the
+   * bottom of one box and enters the top of the next rather than exiting right
+   * and entering left, which would double back across the box it started from.
+   */
+  vertical: boolean;
 }
 
 /** Bucket nodes into columns, canonical order, skipping empty groups. */
@@ -63,17 +69,33 @@ export function resolveEdges(
 ): ResolvedEdge[] {
   return edges
     .filter((edge) => positions[edge.from] && positions[edge.to])
-    .map((edge) => ({
-      from: {
-        x: positions[edge.from].x + NODE_WIDTH,
-        y: positions[edge.from].y + NODE_HEIGHT / 2,
-      },
-      to: {
-        x: positions[edge.to].x,
-        y: positions[edge.to].y + NODE_HEIGHT / 2,
-      },
-      label: edge.label,
-    }));
+    .map((edge) => {
+      const from = positions[edge.from];
+      const to = positions[edge.to];
+
+      if (from.x === to.x) {
+        const downward = to.y > from.y;
+        return {
+          from: {
+            x: from.x + NODE_WIDTH / 2,
+            y: downward ? from.y + NODE_HEIGHT : from.y,
+          },
+          to: {
+            x: to.x + NODE_WIDTH / 2,
+            y: downward ? to.y : to.y + NODE_HEIGHT,
+          },
+          label: edge.label,
+          vertical: true,
+        };
+      }
+
+      return {
+        from: { x: from.x + NODE_WIDTH, y: from.y + NODE_HEIGHT / 2 },
+        to: { x: to.x, y: to.y + NODE_HEIGHT / 2 },
+        label: edge.label,
+        vertical: false,
+      };
+    });
 }
 
 /**

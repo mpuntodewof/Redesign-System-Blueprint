@@ -55,7 +55,9 @@ const ArchitectureDiagram = ({ data, accent }: ArchitectureDiagramProps) => {
         >
           {edges.map((edge, i) => {
             const midX = (edge.from.x + edge.to.x) / 2;
-            const path = `M ${edge.from.x} ${edge.from.y} H ${midX} V ${edge.to.y} H ${edge.to.x}`;
+            const path = edge.vertical
+              ? `M ${edge.from.x} ${edge.from.y} V ${edge.to.y}`
+              : `M ${edge.from.x} ${edge.from.y} H ${midX} V ${edge.to.y} H ${edge.to.x}`;
             return (
               <g key={i}>
                 <path
@@ -67,9 +69,9 @@ const ArchitectureDiagram = ({ data, accent }: ArchitectureDiagramProps) => {
                 <circle cx={edge.to.x} cy={edge.to.y} r="3" fill={`hsl(${accent})`} />
                 {edge.label && (
                   <text
-                    x={midX}
-                    y={(edge.from.y + edge.to.y) / 2 - 6}
-                    textAnchor="middle"
+                    x={edge.vertical ? edge.from.x + 8 : midX}
+                    y={(edge.from.y + edge.to.y) / 2 + (edge.vertical ? 3 : -6)}
+                    textAnchor={edge.vertical ? "start" : "middle"}
                     className="fill-muted-foreground"
                     style={{ fontSize: 10 }}
                   >

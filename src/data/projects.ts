@@ -79,6 +79,42 @@ const projects: Project[] = [
     ],
     githubUrl: "https://github.com/mpuntodewof/Talenta-Receiver-API-Gateway",
     headerGradient: ["239 84% 67%", "217 91% 60%"],
+    caseStudy: {
+      context:
+        "Driver shift, overtime, and time-off records were maintained by hand directly in SAP. Management decided to move HR operations onto Talenta, an external platform run by a vendor, which meant the data still had to reach SAP — but now across a boundary neither side controlled.",
+      challenge:
+        "Both ends of the integration timed out under real volume. Pulling a full day of driver records from Talenta exceeded the external service's response window, and pushing that same volume into SAP exceeded what a single synchronous call could carry. Neither system could be changed to accommodate the other. Separately, Talenta and SAP described the same HR concepts differently, so the API contract had to be negotiated field by field with both the vendor and the SAP team before any of it could be trusted.",
+      approach:
+        "The service was built as middleware that owns the timing rather than inheriting it from either side. Transfers run as background jobs on Hangfire instead of within a request, so no single call has to survive the full volume. Work is batched and scheduled, failed operations retry automatically, and every transfer is logged end to end so a discrepancy can be traced to the record that caused it.",
+      outcome:
+        "Shift, overtime, and time-off data now moves between Talenta and SAP without manual re-entry, and the transfer survives volume that would fail a direct call. Removing the manual step removed the transcription errors that came with it, improving HR and operational data accuracy across the organisation.",
+    },
+    architecture: {
+      summary:
+        "Talenta pushes HR records to the Receiver Service, which stages them and hands them to SAP through a background worker rather than in the originating request. Staging is what makes the timeouts survivable: a failed SAP write retries from the staged record instead of asking Talenta for the data again.",
+      nodes: [
+        { id: "talenta", label: "Talenta", sub: "external HR platform", group: "source" },
+        { id: "receiver", label: "Receiver API", sub: ".NET Core", group: "service" },
+        { id: "staging", label: "Staging Store", sub: "SQL Server", group: "store" },
+        { id: "worker", label: "Background Worker", sub: "Hangfire, retries", group: "store" },
+        { id: "sap", label: "SAP", sub: "via RFC", group: "target" },
+      ],
+      edges: [
+        { from: "talenta", to: "receiver", label: "shift, overtime, leave" },
+        { from: "receiver", to: "staging", label: "stage" },
+        { from: "staging", to: "worker", label: "claim batch" },
+        { from: "worker", to: "sap", label: "batched write" },
+      ],
+    },
+    businessValue: {
+      metrics: [
+        { value: "3", label: "HR data domains synchronised" },
+        { value: "0", label: "manual re-entry steps" },
+        { value: "Batched", label: "transfers under peak volume" },
+      ],
+      narrative:
+        "The integration removed a standing manual workload from the HR and operations teams and made the data in SAP a reflection of what Talenta actually holds, rather than of how recently someone had time to copy it across.",
+    },
   },
   {
     slug: "e-timesheet",

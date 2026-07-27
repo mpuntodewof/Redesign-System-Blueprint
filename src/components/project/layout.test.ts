@@ -65,6 +65,30 @@ describe("resolveEdges", () => {
     expect(resolved[0].label).toBe("sync");
   });
 
+  it("routes a cross-column edge from the right edge to the left edge", () => {
+    const positions = computePositions(groupNodes(nodes));
+    const [edge] = resolveEdges([{ from: "a", to: "b" }], positions);
+    expect(edge.vertical).toBe(false);
+    expect(edge.from.x).toBeGreaterThan(positions.a.x);
+    expect(edge.to.x).toBe(positions.b.x);
+  });
+
+  it("routes a same-column edge vertically between the two boxes", () => {
+    // b and c share the service column; exiting right would double back over b.
+    const positions = computePositions(groupNodes(nodes));
+    const [edge] = resolveEdges([{ from: "b", to: "c" }], positions);
+    expect(edge.vertical).toBe(true);
+    expect(edge.from.x).toBe(edge.to.x);
+    expect(edge.from.y).toBeLessThan(edge.to.y);
+  });
+
+  it("routes an upward same-column edge from the top of the lower box", () => {
+    const positions = computePositions(groupNodes(nodes));
+    const [edge] = resolveEdges([{ from: "c", to: "b" }], positions);
+    expect(edge.vertical).toBe(true);
+    expect(edge.from.y).toBeGreaterThan(edge.to.y);
+  });
+
   it("drops edges referencing an unknown node id", () => {
     const positions = computePositions(groupNodes(nodes));
     const edges: ArchitectureEdge[] = [
