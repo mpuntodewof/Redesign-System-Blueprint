@@ -1,0 +1,77 @@
+import { groupNodes, computePositions, resolveEdges, GROUP_ORDER } from "./layout";
+import type { ArchitectureNode, ArchitectureEdge } from "@/data/projects";
+
+const nodes: ArchitectureNode[] = [
+  { id: "a", label: "Source A", group: "source" },
+  { id: "b", label: "Service B", group: "service" },
+  { id: "c", label: "Service C", group: "service" },
+  { id: "d", label: "Target D", group: "target" },
+];
+
+describe("groupNodes", () => {
+  it("buckets nodes into groups in canonical order", () => {
+    const result = groupNodes(nodes);
+    expect(result.map((c) => c.group)).toEqual(["source", "service", "target"]);
+    expect(result[1].nodes.map((n) => n.id)).toEqual(["b", "c"]);
+  });
+
+  it("omits groups with no nodes", () => {
+    const result = groupNodes([{ id: "a", label: "A", group: "source" }]);
+    expect(result).toHaveLength(1);
+  });
+
+  it("returns an empty array for no nodes", () => {
+    expect(groupNodes([])).toEqual([]);
+  });
+
+  it("orders groups canonically regardless of input order", () => {
+    const shuffled: ArchitectureNode[] = [
+      { id: "d", label: "D", group: "target" },
+      { id: "a", label: "A", group: "source" },
+    ];
+    expect(groupNodes(shuffled).map((c) => c.group)).toEqual(["source", "target"]);
+  });
+});
+
+describe("computePositions", () => {
+  it("assigns each node an x by column and centers columns vertically", () => {
+    const positions = computePositions(groupNodes(nodes));
+    expect(positions.a.x).toBeLessThan(positions.b.x);
+    expect(positions.b.x).toBeLessThan(positions.d.x);
+    // single-node columns centre against the tallest column (2 nodes)
+    expect(positions.a.y).toBeGreaterThan(positions.b.y);
+    expect(positions.b.y).toBeLessThan(positions.c.y);
+  });
+
+  it("handles a single node", () => {
+    const positions = computePositions(groupNodes([{ id: "solo", label: "S", group: "service" }]));
+    expect(positions.solo).toBeDefined();
+    expect(positions.solo.x).toBe(0);
+  });
+});
+
+describe("resolveEdges", () => {
+  it("resolves edges whose endpoints both exist", () => {
+    const positions = computePositions(groupNodes(nodes));
+    const edges: ArchitectureEdge[] = [{ from: "a", to: "b", label: "sync" }];
+    const resolved = resolveEdges(edges, positions);
+    expect(resolved).toHaveLength(1);
+    expect(resolved[0].label).toBe("sync");
+  });
+
+  it("drops edges referencing an unknown node id", () => {
+    const positions = computePositions(groupNodes(nodes));
+    const edges: ArchitectureEdge[] = [
+      { from: "a", to: "b" },
+      { from: "a", to: "ghost" },
+      { from: "ghost", to: "d" },
+    ];
+    expect(resolveEdges(edges, positions)).toHaveLength(1);
+  });
+});
+
+describe("GROUP_ORDER", () => {
+  it("flows source to target", () => {
+    expect(GROUP_ORDER).toEqual(["source", "service", "store", "target"]);
+  });
+});
