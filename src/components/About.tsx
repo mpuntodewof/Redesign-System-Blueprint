@@ -13,7 +13,17 @@ const About = () => {
             viewport={{ once: true }}
           >
             <div className="w-48 h-48 sm:w-56 sm:h-56 rounded-2xl overflow-hidden gradient-border glow">
-              <img src="/profile.png" alt="Profile" className="w-full h-full object-cover" />
+              {/* Below the fold, so this one stays lazy — it reuses the same
+                  variants the hero already warmed in cache. */}
+              <img
+                src="/profile-320.webp"
+                alt="Profile"
+                width={320}
+                height={320}
+                loading="lazy"
+                decoding="async"
+                className="w-full h-full object-cover"
+              />
             </div>
           </motion.div>
 

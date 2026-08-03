@@ -94,26 +94,39 @@ const Hero = () => {
           </motion.div>
 
           {/* Profile image */}
-          <motion.div
-            className="relative flex-shrink-0"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-          >
+          {/*
+            This is the LCP element, so it is deliberately NOT wrapped in a
+            motion fade: an element at opacity 0 does not count as painted,
+            which pushed LCP out by the animation's delay + duration. The
+            decorative glow behind it still animates.
+          */}
+          <div className="relative flex-shrink-0">
             <div className="relative w-64 h-64 sm:w-72 sm:h-72 lg:w-80 lg:h-80">
-              <div className="absolute inset-0 rounded-full animate-float" style={{
-                backgroundImage: 'linear-gradient(135deg, hsl(239 84% 67% / 0.3), hsl(263 70% 50% / 0.3))',
-                filter: 'blur(30px)',
-              }} />
+              <motion.div
+                className="absolute inset-0 rounded-full animate-float"
+                style={{
+                  backgroundImage: 'linear-gradient(135deg, hsl(239 84% 67% / 0.3), hsl(263 70% 50% / 0.3))',
+                  filter: 'blur(30px)',
+                }}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.7, delay: 0.3 }}
+              />
               <div className="relative w-full h-full rounded-full overflow-hidden gradient-border glow">
                 <img
-                  src="/profile.png"
+                  src="/profile-640.webp"
+                  srcSet="/profile-320.webp 320w, /profile-640.webp 640w"
+                  sizes="(min-width: 1024px) 320px, (min-width: 640px) 288px, 256px"
                   alt="Software Engineer profile"
+                  width={640}
+                  height={640}
+                  fetchPriority="high"
+                  decoding="async"
                   className="w-full h-full object-cover rounded-full"
                 />
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
 
