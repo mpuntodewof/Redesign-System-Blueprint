@@ -29,18 +29,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <script>
-      // Replays the path stashed by public/404.html. Runs before main.tsx so
-      // React Router reads the restored URL on its first render rather than
-      // seeing "/" and rendering the homepage.
-      (function () {
-        var target = sessionStorage.getItem("spa-redirect");
-        if (target && target !== "/") {
-          sessionStorage.removeItem("spa-redirect");
-          window.history.replaceState(null, "", target);
-        }
-      })();
-    </script>
     <script type="module" src="/src/main.tsx"></script>
     <!-- Cloudflare Web Analytics -->
     <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "e919f767524e4ff4827bc979e5cbcad7", "spa": true}'></script>
