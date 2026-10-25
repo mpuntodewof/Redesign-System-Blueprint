@@ -66,8 +66,14 @@ export interface Project {
   overview: string;
   features: string[];
   githubUrl: string;
-  headerGradient: [string, string]; // two HSL colors for the header background
   clickable?: boolean; // defaults to true if omitted
+  /** Employer the system was built for; omitted for personal builds. */
+  org?: string;
+  group: "professional" | "personal";
+  /** Shown as the homepage's featured case study. Exactly one project sets this. */
+  featured?: boolean;
+  /** Three-step summary on the featured homepage card. */
+  highlight?: { context: string; approach: string; outcome: string };
   caseStudy?: CaseStudy;
   architecture?: Architecture;
   businessValue?: BusinessValue;
@@ -92,7 +98,17 @@ const projects: Project[] = [
       "Configurable scheduling for flexible sync intervals",
     ],
     githubUrl: "https://github.com/mpuntodewof/Talenta-Receiver-API-Gateway",
-    headerGradient: ["239 84% 67%", "217 91% 60%"],
+    org: "Bluebird Group",
+    group: "professional",
+    featured: true,
+    highlight: {
+      context:
+        "Driver shift, overtime and time-off records were kept by hand in SAP. When HR moved to Talenta, a vendor platform, the data still had to reach SAP, across a boundary neither side controlled.",
+      approach:
+        "Middleware that owns the timing. Records are acknowledged and staged in SQL Server, then Hangfire workers post batches to SAP over RFC, with automatic retries and end-to-end logging.",
+      outcome:
+        "Shift, overtime and time-off data reaches SAP without manual re-entry, and transfers survive volumes that would time out a direct call.",
+    },
     caseStudy: {
       context:
         "Driver shift, overtime, and time-off records were maintained by hand directly in SAP. Management decided to move HR operations onto Talenta, an external platform run by a vendor, which meant the data still had to reach SAP — but now across a boundary neither side controlled.",
@@ -175,7 +191,8 @@ const projects: Project[] = [
       "Payroll and reporting integration support",
     ],
     githubUrl: "https://github.com/mpuntodewof/eTimesheet-.DotnetCore7-API",
-    headerGradient: ["199 89% 48%", "239 84% 67%"],
+    org: "Bluebird Group",
+    group: "professional",
   },
   {
     slug: "banking-middleware-apis",
@@ -272,7 +289,8 @@ const projects: Project[] = [
         "Interbank transfer is a domain where the cost of a duplicate is measured in customer money and regulatory exposure rather than in a retry. Delivering it as a new build meant establishing that correctness from the start, with no prior implementation to fall back on.",
     },
     githubUrl: "",
-    headerGradient: ["263 70% 50%", "239 84% 67%"],
+    org: "Bank Raya",
+    group: "professional",
   },
   {
     slug: "e-management-of-change",
@@ -291,7 +309,8 @@ const projects: Project[] = [
     ],
     clickable: false,
     githubUrl: "",
-    headerGradient: ["45 93% 47%", "25 95% 53%"],
+    org: "Bayer",
+    group: "professional",
   },
   {
     slug: "e-credit-management",
@@ -310,7 +329,8 @@ const projects: Project[] = [
     ],
     clickable: false,
     githubUrl: "",
-    headerGradient: ["15 85% 55%", "339 84% 55%"],
+    org: "Bayer",
+    group: "professional",
   },
   {
     slug: "stockledger",
@@ -417,7 +437,7 @@ const projects: Project[] = [
         "Rather than a warehouse tool with reporting bolted on, this is a single system where an inventory event and its accounting consequence are written together — which is what makes the monthly close and the tax filing derivable rather than reconstructed.",
     },
     githubUrl: "https://github.com/mpuntodewof/StockLedger",
-    headerGradient: ["160 84% 39%", "217 91% 60%"],
+    group: "personal",
   },
   {
     slug: "habit-tracker",
@@ -516,7 +536,7 @@ const projects: Project[] = [
         "The tracking features are the visible half; the half worth reviewing is a session design that treats a personal side project as if the token actually mattered.",
     },
     githubUrl: "https://github.com/mpuntodewof/DailyHabitApps",
-    headerGradient: ["339 84% 55%", "263 70% 50%"],
+    group: "personal",
   },
   {
     slug: "meal-planner",
@@ -621,7 +641,7 @@ const projects: Project[] = [
         "The distinguishing work here is not the AI call itself but everything around it: making an unreliable external dependency behave predictably, and turning a week of planned meals into a shopping list without asking the user to maintain one.",
     },
     githubUrl: "https://github.com/mpuntodewof/Meal-Planner-Apps",
-    headerGradient: ["25 95% 53%", "45 93% 47%"],
+    group: "personal",
   },
 ];
 

@@ -34,7 +34,9 @@ const ProjectDetail = () => {
     );
   }
 
-  const [color1, color2] = project.headerGradient;
+  // Case-study pages follow the site palette rather than per-project colours.
+  const color1 = "var(--primary)";
+  const color2 = "var(--border-strong)";
 
   return (
     <main className="min-h-screen bg-background text-foreground overflow-x-hidden">
@@ -54,15 +56,6 @@ const ProjectDetail = () => {
               backgroundImage: `linear-gradient(hsl(${color1}) 1px, transparent 1px), linear-gradient(90deg, hsl(${color1}) 1px, transparent 1px)`,
               backgroundSize: "50px 50px",
             }}
-          />
-          {/* Floating orbs */}
-          <div
-            className="absolute top-1/4 left-1/3 w-72 h-72 rounded-full blur-[100px] animate-pulse"
-            style={{ backgroundColor: `hsl(${color1} / 0.2)` }}
-          />
-          <div
-            className="absolute bottom-1/4 right-1/4 w-56 h-56 rounded-full blur-[80px] animate-pulse"
-            style={{ backgroundColor: `hsl(${color2} / 0.15)`, animationDelay: "1.5s" }}
           />
           {/* Decorative icons */}
           <svg className="absolute inset-0 w-full h-full opacity-[0.06]" xmlns="http://www.w3.org/2000/svg">
