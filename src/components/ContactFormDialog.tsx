@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { EMAIL, LINKEDIN_URL } from "@/lib/profile";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -65,14 +66,14 @@ const ContactFormDialog = ({ open, onOpenChange }: ContactFormDialogProps) => {
       `Hi,\n\nI'd like to discuss a project.\n\nName: ${data.name}\nEmail: ${data.email}${budgetText}\n\nProject Details:\n${data.description}`
     );
 
-    window.location.href = `mailto:puntodewofadhillah@gmail.com?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:${EMAIL}?subject=${subject}&body=${body}`;
 
     setTimeout(() => {
       setIsSubmitting(false);
       form.reset();
       onOpenChange(false);
       toast.success("Email client opened! If it didn't open, feel free to reach out directly.", {
-        description: "puntodewofadhillah@gmail.com",
+        description: EMAIL,
         duration: 5000,
       });
     }, 500);
@@ -188,7 +189,7 @@ const ContactFormDialog = ({ open, onOpenChange }: ContactFormDialogProps) => {
                 </a>
                 {" "}or{" "}
                 <a
-                  href="https://www.linkedin.com/in/muhammad-puntodewo-fadhillah-347169160/"
+                  href={LINKEDIN_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-foreground hover:underline"

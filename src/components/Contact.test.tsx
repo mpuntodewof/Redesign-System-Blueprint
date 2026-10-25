@@ -25,4 +25,9 @@ describe("Footer", () => {
     render(<Footer />);
     expect(screen.getByText(/Muhammad Puntodewo Fadhillah/)).toBeInTheDocument();
   });
+
+  it("is self-contained: carries its own centered max-width container", () => {
+    render(<Footer />);
+    expect(screen.getByRole("contentinfo")).toHaveClass("mx-auto", "max-w-[1180px]");
+  });
 });
