@@ -31,4 +31,17 @@ describe("useTypewriter", () => {
     act(() => vi.advanceTimersByTime(20));
     expect(result.current).toBe("cd");
   });
+
+  it("restarts from the full first phrase after being disabled and re-enabled", () => {
+    const { result, rerender } = renderHook(({ enabled }) => useTypewriter(PHRASES, enabled, TIMING), {
+      initialProps: { enabled: true },
+    });
+    act(() => vi.advanceTimersByTime(100)); // hold ends
+    act(() => vi.advanceTimersByTime(10)); // one character erased
+    expect(result.current).toBe("a");
+    rerender({ enabled: false });
+    expect(result.current).toBe("ab");
+    rerender({ enabled: true });
+    expect(result.current).toBe("ab");
+  });
 });

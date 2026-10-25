@@ -24,8 +24,15 @@ export function useTypewriter(
   const { hold, erase, type } = timing;
 
   useEffect(() => {
-    if (!enabled || phrases.length < 2) return;
-    const current = phrases[state.index];
+    if (!enabled || phrases.length < 2) {
+      setState((s) =>
+        s.index === 0 && s.length === (phrases[0]?.length ?? 0) && !s.deleting
+          ? s
+          : { index: 0, length: phrases[0]?.length ?? 0, deleting: false },
+      );
+      return;
+    }
+    const current = phrases[state.index] ?? "";
     let delay: number;
     let next: typeof state;
 
@@ -48,5 +55,5 @@ export function useTypewriter(
   }, [state, enabled, phrases, hold, erase, type]);
 
   if (!enabled) return phrases[0] ?? "";
-  return phrases[state.index].slice(0, state.length);
+  return (phrases[state.index] ?? "").slice(0, state.length);
 }
