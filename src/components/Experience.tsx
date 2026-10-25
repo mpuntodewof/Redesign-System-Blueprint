@@ -123,6 +123,7 @@ const roles: Role[] = [
 
 const Experience = () => {
   const [selected, setSelected] = useState<Role | null>(null);
+  const [open, setOpen] = useState(false);
 
   return (
     <section id="experience" className="mb-28 scroll-mt-20">
@@ -168,9 +169,12 @@ const Experience = () => {
                 </div>
                 <button
                   type="button"
-                  onClick={() => setSelected(role)}
+                  onClick={() => {
+                    setSelected(role);
+                    setOpen(true);
+                  }}
                   aria-label={`Full details: ${role.role} at ${role.company}`}
-                  className="mt-4 font-mono text-xs font-medium text-foreground transition-colors hover:text-primary"
+                  className="mt-4 py-1 font-mono text-xs font-medium text-foreground transition-colors hover:text-primary"
                 >
                   Full details →
                 </button>
@@ -184,7 +188,7 @@ const Experience = () => {
         View on LinkedIn ↗
       </a>
 
-      <Dialog open={selected !== null} onOpenChange={(open) => !open && setSelected(null)}>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-h-[85vh] overflow-y-auto border-border bg-card sm:max-w-[600px]">
           {selected && (
             <>

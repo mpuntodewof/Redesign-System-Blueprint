@@ -38,8 +38,10 @@ const Index = () => {
         <TechStack />
         <Services />
         <Contact />
-        <Footer />
       </main>
+      <div className="mx-auto max-w-[1180px] px-4 md:px-8">
+        <Footer />
+      </div>
     </>
   );
 };

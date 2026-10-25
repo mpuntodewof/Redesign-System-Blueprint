@@ -44,6 +44,7 @@ const IntegrationConsole = () => {
 
   return (
     <figure className="hud" aria-label="Animated overview of the integrations I build at Bluebird">
+      <figcaption className="sr-only">Illustrative simulation: Portal Timesheet, Talenta HR and payment gateways feed a .NET and Go middleware that stages, retries and audits each transfer before posting to SAP and the finance ledger.</figcaption>
       <div className="flex items-center gap-2.5 border-b border-border px-3.5 py-2.5 font-mono text-[11.5px] font-medium text-muted-foreground">
         bluebird / integration-overview
         <span className="ml-auto rounded-[3px] border border-primary/40 px-1.5 text-[10.5px] tracking-[0.06em] text-primary">

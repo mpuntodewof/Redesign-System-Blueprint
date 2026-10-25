@@ -19,7 +19,7 @@ const Services = () => {
       <Reveal>
         <HudCard glow className="grid items-start gap-10 p-6 md:grid-cols-[1fr_1.35fr] md:p-9">
           <div>
-            <p className="font-mono text-xs text-primary">{"// also available"}</p>
+            <p aria-hidden="true" className="font-mono text-xs text-primary">{"// also available"}</p>
             <h2 className="mb-2.5 mt-2 text-[26px] font-semibold tracking-[-0.03em] text-foreground">
               Contract &amp; freelance engagements
             </h2>

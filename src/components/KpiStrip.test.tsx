@@ -10,4 +10,9 @@ describe("KpiStrip", () => {
     expect(screen.getByText("1,000")).toBeInTheDocument();
     expect(screen.getByText("−40")).toBeInTheDocument();
   });
+
+  it("renders the figures as a description list", () => {
+    const { container } = render(<KpiStrip />);
+    expect(container.querySelectorAll("dt")).toHaveLength(4);
+  });
 });
