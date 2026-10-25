@@ -83,7 +83,8 @@ Order and contents follow the reference mockup.
 4. **Experience (`// 01`).** A pipeline timeline: a vertical primary-coloured line with a travelling pulse
    and one node per job. Each job is a HUD card with the period, company, industry, role, system modules
    (name, one line, route tag such as `Talenta HR → SAP`), stack chips and impact chips.
-   It has four entries from the CV: Bluebird, Bank Raya, Bayer, Thortech.
+   It has four entries from the CV: Bluebird, Bank Raya, Bayer, Thortech. Each card keeps the
+   existing details dialog, which opens with a **Full details →** button and shows the CV bullets verbatim.
 5. **Projects (`// 02`).** All eight entries from `projects.ts`:
    - **Featured case study:** Talenta → SAP Integration, with Context → Approach → Outcome
      steps, its full stack chips, and **Read case study →** and **GitHub ↗** links.
@@ -94,14 +95,14 @@ Order and contents follow the reference mockup.
      the first four stack chips plus "+N more", and its links. Cards with no case-study page
      (`clickable: false`) show "Internal system · private". Cards without a repo show
      "Private codebase" in place of the GitHub link.
-6. **Tech stack (`// 03`).** The CV's five categories and 35 skills, word for word.
+6. **Tech stack (`// 03`).** The CV's five categories and 35 skills, word for word and in CV order.
    Backend spans two columns.
-   - Backend: .NET Core, C#, ASP.NET, Golang, gRPC, RESTful APIs, PHP, Laravel, Microservices,
-     API Gateway, Clean Architecture, Background Services
-   - Frontend: React.js, JavaScript, Material UI, Bootstrap, HTML, CSS
+   - Backend: .NET Core, C#, ASP.NET, gRPC, RESTful APIs, PHP, Laravel, Microservices,
+     API Gateway, Clean Architecture, Background Services, Golang
+   - Frontend: React.js, Bootstrap, HTML, CSS, JavaScript, Material UI
    - Databases: SQL Server, MySQL, Relational Database Design, Query Optimization
    - Tools & DevOps: Git, GitHub, GitLab, Postman, Jira, Docker, CI/CD, Jenkins
-   - Other: Agile / Scrum, SAP Integration, API Documentation, Claude Code, Agentic AI
+   - Other: Agile/Scrum, SAP Integration, API Documentation, Claude Code, Agentic AI
 
    Logos come from devicon **pinned to `v2.16.0`** on jsDelivr (not `@latest`). Concept skills
    with no real logo use a neutral glyph in the primary colour, not another brand's logo.
@@ -133,7 +134,7 @@ and `FinalCTA` (replaced by Contact). These components and any tests that cover 
 | `Contact.tsx` (new) | terminal contact block | Replaces `FinalCTA.tsx` |
 | `Footer.tsx` | mono footer | Restyle only |
 | `ProjectDetail.tsx` + `components/project/*` | case-study pages | **Restyle only.** Switch to the new tokens and utilities. No structural or content change |
-| `src/lib/resume.ts` (new) | `RESUME_URL`, `RESUME_FILENAME` constants | Single source for all three résumé links |
+| `src/lib/profile.ts` (new) | `RESUME_URL`, `RESUME_FILENAME`, name, email and social URLs | Single source for all three résumé links and every contact link |
 | `public/Muhammad-Puntodewo-Fadhillah-CV.pdf` | the CV | Copied from `CV Puntodewo - 2026.10.25.pdf` |
 
 Case-study links use React Router (`/project/:slug`), not absolute URLs, so they work on
