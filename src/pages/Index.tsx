@@ -2,14 +2,12 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
-import TrustMetrics from "@/components/TrustMetrics";
-import Services from "@/components/Services";
+import KpiStrip from "@/components/KpiStrip";
 import Experience from "@/components/Experience";
 import Projects from "@/components/Projects";
 import TechStack from "@/components/TechStack";
-import WorkProcess from "@/components/WorkProcess";
-import About from "@/components/About";
-import FinalCTA from "@/components/FinalCTA";
+import Services from "@/components/Services";
+import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 
 const Index = () => {
@@ -29,19 +27,20 @@ const Index = () => {
   }, [location.state]);
 
   return (
-    <main className="min-h-screen bg-background text-foreground overflow-x-hidden">
+    <>
+      <div className="grid-backdrop" aria-hidden="true" />
       <Navbar />
-      <Hero />
-      <TrustMetrics />
-      <Services />
-      <Experience />
-      <Projects />
-      <TechStack />
-      <WorkProcess />
-      <About />
-      <FinalCTA />
-      <Footer />
-    </main>
+      <main id="top" className="mx-auto max-w-[1180px] overflow-x-hidden px-4 md:px-8">
+        <Hero />
+        <KpiStrip />
+        <Experience />
+        <Projects />
+        <TechStack />
+        <Services />
+        <Contact />
+        <Footer />
+      </main>
+    </>
   );
 };
 
