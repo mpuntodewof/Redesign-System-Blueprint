@@ -172,6 +172,7 @@
   .glowcard .spot {
     position: absolute;
     inset: 0;
+    z-index: -1;
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.3s;

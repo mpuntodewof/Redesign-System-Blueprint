@@ -18,9 +18,10 @@ describe("HudCard", () => {
     const card = screen.getByTestId("card");
     expect(card.tagName).toBe("ARTICLE");
     expect(card).toHaveClass("glowcard");
+    vi.spyOn(card, "getBoundingClientRect").mockReturnValue({ left: 10, top: 5, right: 0, bottom: 0, width: 0, height: 0, x: 10, y: 5, toJSON: () => ({}) } as DOMRect);
     fireEvent.mouseMove(card, { clientX: 40, clientY: 12 });
-    expect(card.style.getPropertyValue("--mx")).toBe("40px");
-    expect(card.style.getPropertyValue("--my")).toBe("12px");
+    expect(card.style.getPropertyValue("--mx")).toBe("30px");
+    expect(card.style.getPropertyValue("--my")).toBe("7px");
   });
 });
 
