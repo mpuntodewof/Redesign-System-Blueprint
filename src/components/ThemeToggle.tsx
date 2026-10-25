@@ -1,61 +1,34 @@
-import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "next-themes";
 
 const ThemeToggle = () => {
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
 
-  if (!mounted) return null;
+  // Reserve the space until the theme is known, so the header doesn't shift.
+  if (!mounted) return <span className="h-[34px] w-[34px]" aria-hidden="true" />;
 
-  const isDark = theme === "dark";
+  const isDark = resolvedTheme === "dark";
 
   return (
     <button
+      type="button"
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="fixed top-6 right-6 z-50 glass rounded-full p-3 transition-all hover:scale-110 hover:glow"
       aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
+      className="grid h-[34px] w-[34px] place-items-center rounded-md border border-border-strong text-body transition-colors hover:border-primary/60 hover:text-primary"
     >
-      <AnimatePresence mode="wait">
-        {isDark ? (
-          <motion.svg
-            key="sun"
-            width="20"
-            height="20"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="2"
-            className="text-yellow-400"
-            initial={{ rotate: -90, opacity: 0 }}
-            animate={{ rotate: 0, opacity: 1 }}
-            exit={{ rotate: 90, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <circle cx="12" cy="12" r="5" />
-            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-          </motion.svg>
-        ) : (
-          <motion.svg
-            key="moon"
-            width="20"
-            height="20"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="2"
-            className="text-primary"
-            initial={{ rotate: 90, opacity: 0 }}
-            animate={{ rotate: 0, opacity: 1 }}
-            exit={{ rotate: -90, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
-          </motion.svg>
-        )}
-      </AnimatePresence>
+      {isDark ? (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+        </svg>
+      ) : (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+        </svg>
+      )}
     </button>
   );
 };
