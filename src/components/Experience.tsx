@@ -1,30 +1,52 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
+import HudCard from "@/components/blueprint/HudCard";
+import Reveal from "@/components/blueprint/Reveal";
+import SectionHeading from "@/components/blueprint/SectionHeading";
+import { LINKEDIN_URL } from "@/lib/profile";
 
-interface Experience {
-  role: string;
+interface SystemModule {
+  name: string;
+  summary: string;
+  /** Integration direction, e.g. "Talenta HR → SAP". */
+  route?: string;
+}
+
+interface Role {
   company: string;
+  industry: string;
+  role: string;
+  /** Compact form for the card, e.g. "2023 → NOW". */
   period: string;
-  description: string;
-  highlights: string[];
+  /** Full form for the details dialog. */
+  fullPeriod: string;
+  modules: SystemModule[];
+  impact: string[];
+  stack: string[];
+  /** CV bullets, verbatim. */
   bullets: string[];
 }
 
-const experiences: Experience[] = [
+const roles: Role[] = [
   {
-    role: "IT Application Developer",
     company: "PT Bluebird Group",
-    period: "Mar 2023 — Present",
-    description:
-      "Designed scalable RESTful APIs for E-Timesheet and Talenta Receiver services integrating Portal Timesheet and Talenta HR with SAP. Engineered the Journaling Service for multi-gateway financial transaction recording.",
-    highlights: ["SAP Integration", "API Middleware", "Background Processing", "Agile/Scrum"],
+    industry: "Transport",
+    role: "IT Application Developer",
+    period: "2023 → NOW",
+    fullPeriod: "Mar 2023 — Present",
+    modules: [
+      { name: "E-Timesheet Service", summary: "Driver contracts, timesheets and operating permits (SIO).", route: "Portal Timesheet → SAP" },
+      { name: "Talenta Receiver Service", summary: "Shifts, overtime and time-off via background processing.", route: "Talenta HR → SAP" },
+      { name: "Journaling Service", summary: "Multi-gateway transactions with less manual reconciliation.", route: "Gateways → Ledger" },
+    ],
+    impact: [],
+    stack: [".NET Core", "Go", "gRPC", "SQL Server", "MySQL", "SAP"],
     bullets: [
       "Designed and developed scalable RESTful APIs for the E-Timesheet Service, an API middleware integrating Portal Timesheet with SAP, covering driver contract, driver timesheet, and Driver SIO (Surat Izin Operasi) data to improve HR and operational data accuracy.",
       "Built and maintained the Talenta Receiver Service, an API middleware integrating Talenta (external HR platform) with SAP, handling driver shift schedules, overtime, and time-off data with reliable background processing.",
@@ -35,12 +57,17 @@ const experiences: Experience[] = [
     ],
   },
   {
-    role: "Backend Developer",
     company: "PT Bank Raya",
-    period: "Mar 2021 — Feb 2023",
-    description:
-      "Designed and developed BI-FAST middleware APIs using .NET Core & SQL Server, supporting 1,000+ daily interbank transactions. Built and maintained a Card Management System for 5,000+ active cardholders.",
-    highlights: ["BI-FAST Integration", "1,000+ Daily Transactions", "Card Management", ".NET Core"],
+    industry: "Banking",
+    role: "Backend Developer",
+    period: "2021 → 2023",
+    fullPeriod: "Mar 2021 — Feb 2023",
+    modules: [
+      { name: "BI-FAST middleware", summary: "Real-time interbank transfer APIs for web and mobile banking.", route: "Bank ↔ BI-FAST" },
+      { name: "Card Management System", summary: "Automated issuance and status tracking.", route: "Web Forms · SQL Server" },
+    ],
+    impact: ["1,000+ tx/day", "5,000+ cardholders"],
+    stack: [".NET Core", "SQL Server"],
     bullets: [
       "Designed and developed RESTful APIs for the BI-FAST middleware service using .NET Core and SQL Server, enabling secure real-time integration across web and mobile banking applications.",
       "Implemented backend service flows for interbank fund transfers, supporting over 1,000 daily transactions with a strong focus on data consistency, validation, and reliability.",
@@ -51,12 +78,17 @@ const experiences: Experience[] = [
     ],
   },
   {
-    role: "IT Application Developer",
     company: "PT Bayer Indonesia",
-    period: "Apr 2019 — Feb 2021",
-    description:
-      "Developed enterprise web applications using .NET C#, SQL Server, Laravel & Bootstrap. Optimized the Credit Management system reducing processing errors by 40%.",
-    highlights: ["40% Error Reduction", "5+ Enterprise Apps", "Credit Management", ".NET & Laravel"],
+    industry: "Pharmaceutical",
+    role: "IT Application Developer",
+    period: "2019 → 2021",
+    fullPeriod: "Apr 2019 — Feb 2021",
+    modules: [
+      { name: "Credit Management", summary: "Redesigned the database and workflows." },
+      { name: "E-Management of Change", summary: "Documentation and approval workflow app." },
+    ],
+    impact: ["−40% errors", "+30% approvals", "−25% support"],
+    stack: [".NET C#", "Laravel"],
     bullets: [
       "Developed and maintained enterprise web applications using .NET C#, SQL Server, Laravel, and Bootstrap, supporting multiple internal business processes.",
       "Optimized database design and backend workflows for the Credit Management system, reducing processing errors by 40% and improving overall system reliability.",
@@ -68,12 +100,17 @@ const experiences: Experience[] = [
     ],
   },
   {
-    role: "Web Developer",
     company: "Thortech Asia",
-    period: "Apr 2018 — Apr 2019",
-    description:
-      "Built RESTful APIs for the Kirimkanai mobile app serving 1,000+ active users. Developed the Gapallan logistics and ship maintenance system, reducing manual data entry by ~40%.",
-    highlights: ["Full-Stack Development", "Mobile API", "Logistics Systems", "Laravel & MySQL"],
+    industry: "Web & mobile",
+    role: "Web Developer",
+    period: "2018 → 2019",
+    fullPeriod: "Apr 2018 — Apr 2019",
+    modules: [
+      { name: "Kirimkanai", summary: "Mobile app APIs and admin tooling for 1,000+ users." },
+      { name: "Gapallan", summary: "Logistics and ship-maintenance management." },
+    ],
+    impact: ["+25% admin efficiency", "−40% manual entry"],
+    stack: ["Laravel", "MySQL"],
     bullets: [
       "Developed and maintained web applications using Laravel, MySQL, JavaScript, Bootstrap, and AJAX, supporting internal business operations across multiple departments.",
       "Designed and implemented RESTful APIs for the Kirimkanai mobile application, enabling secure transactions for 1,000+ active users and seamless integration with admin systems.",
@@ -85,128 +122,89 @@ const experiences: Experience[] = [
 ];
 
 const Experience = () => {
-  const [selectedExp, setSelectedExp] = useState<Experience | null>(null);
+  const [selected, setSelected] = useState<Role | null>(null);
 
   return (
-    <section id="experience" className="py-24 relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary/10 to-background" />
-      <div className="container relative z-10 mx-auto px-6">
-        <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-        >
-          <span className="text-primary font-heading text-sm font-semibold tracking-widest uppercase mb-4 block">Career</span>
-          <h2 className="font-heading text-3xl sm:text-4xl font-bold mb-4">
-            Professional <span className="gradient-text">Experience</span>
-          </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            7+ years delivering scalable backend systems and enterprise applications across transportation, banking, pharmaceutical, and logistics domains.
-          </p>
-        </motion.div>
+    <section id="experience" className="mb-28 scroll-mt-20">
+      <Reveal>
+        <SectionHeading index="01" title="Experience" meta="4 orgs · banking · transport · pharma · logistics" />
+      </Reveal>
 
-        <div className="relative max-w-3xl mx-auto">
-          {/* Timeline line */}
-          <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-px bg-border md:-translate-x-px" />
-
-          {experiences.map((exp, i) => (
-            <motion.div
-              key={exp.role + exp.company}
-              className={`relative flex flex-col md:flex-row gap-8 mb-12 ${i % 2 === 0 ? 'md:flex-row-reverse' : ''}`}
-              initial={{ opacity: 0, x: i % 2 === 0 ? 30 : -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-            >
-              {/* Timeline dot */}
-              <div className="absolute left-4 md:left-1/2 w-3 h-3 rounded-full bg-primary -translate-x-1.5 md:-translate-x-1.5 mt-8 glow" />
-
-              <div className="md:w-1/2" />
-              <div
-                className="ml-12 md:ml-0 md:w-1/2 glass rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:glow group"
-                onClick={() => setSelectedExp(exp)}
-              >
-                <span className="text-xs font-heading text-primary font-semibold">{exp.period}</span>
-                <h3 className="font-heading text-lg font-semibold mt-1">{exp.role}</h3>
-                <p className="text-sm text-muted-foreground mb-3">{exp.company}</p>
-                <p className="text-sm text-secondary-foreground mb-4">{exp.description}</p>
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {exp.highlights.map((h) => (
-                    <span key={h} className="text-xs bg-primary/10 text-primary rounded-full px-3 py-1 font-medium">
-                      {h}
+      <div className="pipe">
+        <span className="pipe-pulse" aria-hidden="true" />
+        {roles.map((role) => (
+          <Reveal key={role.company} className="relative mb-5">
+            <span className="pipe-node" aria-hidden="true" />
+            <HudCard as="article" glow className="grid gap-3 p-5 md:grid-cols-[190px_1fr] md:gap-7 md:p-6">
+              <div>
+                <p className="font-mono text-xs font-medium tracking-[0.04em] text-primary">{role.period}</p>
+                <p className="mt-1 text-[17px] font-semibold text-foreground">{role.company}</p>
+                <p className="mono-label">{role.industry}</p>
+              </div>
+              <div>
+                <h3 className="mb-3 text-[15.5px] font-semibold text-foreground">{role.role}</h3>
+                <div className="grid gap-2.5 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
+                  {role.modules.map((module) => (
+                    <div key={module.name} className="rounded border border-border bg-primary/[0.025] px-3.5 py-3">
+                      <p className="text-[14.5px] font-semibold text-foreground">{module.name}</p>
+                      <p className="mt-0.5 text-[13.5px]">{module.summary}</p>
+                      {module.route && (
+                        <p className="mt-1.5 font-mono text-[11px] font-medium text-primary">{module.route}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-3.5 flex flex-wrap gap-1.5">
+                  {role.impact.map((item) => (
+                    <span key={item} className="chip chip-impact">
+                      {item}
+                    </span>
+                  ))}
+                  {role.stack.map((item) => (
+                    <span key={item} className="chip">
+                      {item}
                     </span>
                   ))}
                 </div>
-                <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors inline-flex items-center gap-1">
-                  Click to view details
-                  <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                </span>
+                <button
+                  type="button"
+                  onClick={() => setSelected(role)}
+                  aria-label={`Full details: ${role.role} at ${role.company}`}
+                  className="mt-4 font-mono text-xs font-medium text-foreground transition-colors hover:text-primary"
+                >
+                  Full details →
+                </button>
               </div>
-            </motion.div>
-          ))}
-        </div>
-
-        <motion.div
-          className="text-center mt-8"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-        >
-          <a
-            href="https://www.linkedin.com/in/muhammad-puntodewo-fadhillah-347169160/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 glass rounded-lg px-8 py-3.5 font-heading font-semibold text-foreground transition-all hover:bg-secondary"
-          >
-            View on LinkedIn
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
-          </a>
-        </motion.div>
+            </HudCard>
+          </Reveal>
+        ))}
       </div>
 
-      {/* Experience Detail Dialog */}
-      <Dialog open={!!selectedExp} onOpenChange={(open) => !open && setSelectedExp(null)}>
-        <DialogContent className="sm:max-w-[600px] glass border-border max-h-[85vh] overflow-y-auto">
-          {selectedExp && (
+      <a href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer" className="btn mt-4">
+        View on LinkedIn ↗
+      </a>
+
+      <Dialog open={selected !== null} onOpenChange={(open) => !open && setSelected(null)}>
+        <DialogContent className="max-h-[85vh] overflow-y-auto border-border bg-card sm:max-w-[600px]">
+          {selected && (
             <>
               <DialogHeader>
-                <div className="flex items-center gap-3 mb-1">
-                  <span className="text-xs font-heading font-semibold text-primary bg-primary/10 rounded-full px-3 py-1">
-                    {selectedExp.period}
-                  </span>
-                </div>
-                <DialogTitle className="font-heading text-2xl">
-                  {selectedExp.role}
-                </DialogTitle>
-                <DialogDescription className="text-base text-muted-foreground">
-                  {selectedExp.company}
+                <p className="font-mono text-xs text-primary">{selected.fullPeriod}</p>
+                <DialogTitle className="text-2xl text-foreground">{selected.role}</DialogTitle>
+                <DialogDescription>
+                  {selected.company} · {selected.industry}
                 </DialogDescription>
               </DialogHeader>
-
-              <div className="mt-2">
-                <h4 className="font-heading text-sm font-semibold text-foreground mb-3">Key Contributions</h4>
-                <ul className="space-y-3">
-                  {selectedExp.bullets.map((bullet, idx) => (
-                    <li key={idx} className="flex gap-3 text-sm text-secondary-foreground">
-                      <span className="text-primary mt-1 flex-shrink-0">
-                        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                      </span>
-                      <span>{bullet}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="mt-4 pt-4 border-t border-border">
-                <div className="flex flex-wrap gap-2">
-                  {selectedExp.highlights.map((h) => (
-                    <span key={h} className="text-xs bg-primary/10 text-primary rounded-full px-3 py-1 font-medium">
-                      {h}
+              <ul className="mt-2 space-y-3">
+                {selected.bullets.map((bullet) => (
+                  <li key={bullet} className="flex gap-3 text-sm">
+                    <span className="mt-0.5 text-primary" aria-hidden="true">
+                      →
                     </span>
-                  ))}
-                </div>
-              </div>
+                    <span>{bullet}</span>
+                  </li>
+                ))}
+              </ul>
             </>
           )}
         </DialogContent>
