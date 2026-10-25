@@ -1,132 +1,47 @@
-import { motion } from "framer-motion";
+import { useState } from "react";
+import ContactFormDialog from "@/components/ContactFormDialog";
+import HudCard from "@/components/blueprint/HudCard";
+import Reveal from "@/components/blueprint/Reveal";
 
+// Integration leads: it is the least commoditised offering (see Services.test.tsx).
 const services = [
-  {
-    title: "Enterprise System Integration",
-    badge: "Core Strength",
-    problem: "Two systems hold the same data and neither agrees with the other",
-    solution: "Middleware that owns the timing — staged transfers, retries, and a negotiated contract between both sides",
-    outcome: "SAP and HR platform integrations carrying payroll-grade data without manual re-entry",
-    icon: (
-      <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" className="text-primary">
-        <circle cx="12" cy="12" r="3" /><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-      </svg>
-    ),
-  },
-  {
-    title: "Backend & API Development",
-    badge: ".NET Core",
-    problem: "Business logic scattered across a codebase nobody wants to change",
-    solution: "Layered .NET services with a clean repository split, OpenAPI contracts, and background processing",
-    outcome: "Backends that survive peak load and stay legible to the next developer",
-    icon: (
-      <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" className="text-primary">
-        <path d="M5 12h14M12 5l7 7-7 7" /><rect x="2" y="3" width="20" height="18" rx="3" />
-        <path d="M7 8h4M7 12h6M7 16h3" />
-      </svg>
-    ),
-  },
-  {
-    title: "Legacy Modernisation & Performance",
-    badge: "Audit & Fix",
-    problem: "Slow queries and silent failures you have learned to work around",
-    solution: "An audit first, then targeted query tuning, fault handling, and retry logic where it actually pays",
-    outcome: "Measured error reduction and systems that hold up under peak-hour load",
-    icon: (
-      <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" className="text-primary">
-        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-      </svg>
-    ),
-  },
-  {
-    title: "Workflow & Approval Automation",
-    badge: "Repeatable",
-    problem: "Approvals live in email and spreadsheets, and no one can prove what was agreed",
-    solution: "Multi-level approval flows with validation rules, state machines, and an immutable audit trail",
-    outcome: "Timesheet, credit, and change-management systems delivered across four organisations",
-    icon: (
-      <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" className="text-primary">
-        <rect x="2" y="3" width="20" height="14" rx="2" /><path d="M8 21h8M12 17v4" />
-      </svg>
-    ),
-  },
+  { title: "Enterprise System Integration", summary: "SAP, HR and finance middleware that owns timing, retries and contracts." },
+  { title: "Backend & API Development", summary: ".NET services with OpenAPI contracts and background processing." },
+  { title: "Legacy Modernisation & Performance", summary: "An audit first, then targeted query tuning and fault handling." },
+  { title: "Workflow & Approval Automation", summary: "Multi-level approvals with state machines and an audit trail." },
 ];
 
 const Services = () => {
+  const [dialogOpen, setDialogOpen] = useState(false);
+
   return (
-    <section id="services" className="py-24 relative">
-      <div className="container mx-auto px-6">
-        <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-        >
-          <span className="text-primary font-heading text-sm font-semibold tracking-widest uppercase mb-4 block">Services</span>
-          <h2 className="font-heading text-3xl sm:text-4xl font-bold mb-4">
-            What I Can <span className="gradient-text">Build For You</span>
-          </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Backend and integration work for teams in banking, transport, pharmaceutical, and
-            logistics — delivered remotely, with overlap across Asia-Pacific and European hours.
-          </p>
-        </motion.div>
-
-        <div className="grid md:grid-cols-2 gap-6">
-          {services.map((service, i) => (
-            <motion.div
-              key={service.title}
-              className="glass rounded-2xl p-8 group hover:glow transition-all duration-500"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-            >
-              <div className="flex items-center gap-4 mb-5">
-                <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 shrink-0">
-                  {service.icon}
-                </div>
-                <h3 className="font-heading text-xl font-semibold leading-tight flex-1">
-                  {service.title}
-                </h3>
-                <span className="text-xs font-heading font-semibold text-primary bg-primary/10 rounded-full px-3 py-1 shrink-0 self-start">
-                  {service.badge}
-                </span>
-              </div>
-              <div className="space-y-3 text-sm">
-                <div className="flex gap-3">
-                  <span className="text-red-400 mt-0.5">✕</span>
-                  <p className="text-muted-foreground">{service.problem}</p>
-                </div>
-                <div className="flex gap-3">
-                  <span className="text-primary mt-0.5">→</span>
-                  <p className="text-secondary-foreground">{service.solution}</p>
-                </div>
-                <div className="flex gap-3">
-                  <span className="text-green-400 mt-0.5">✓</span>
-                  <p className="text-foreground font-medium">{service.outcome}</p>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        <motion.div
-          className="text-center mt-12"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-        >
-          <a
-            href="#contact"
-            className="inline-flex items-center gap-2 rounded-lg px-8 py-3.5 font-heading font-semibold text-primary-foreground transition-all hover:scale-105"
-            style={{ backgroundImage: 'linear-gradient(135deg, hsl(239 84% 67%), hsl(263 70% 50%))' }}
-          >
-            Start a Project
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </a>
-        </motion.div>
-      </div>
+    <section id="contract" className="mb-28 scroll-mt-20">
+      <Reveal>
+        <HudCard glow className="grid items-start gap-10 p-6 md:grid-cols-[1fr_1.35fr] md:p-9">
+          <div>
+            <p className="font-mono text-xs text-primary">{"// also available"}</p>
+            <h2 className="mb-2.5 mt-2 text-[26px] font-semibold tracking-[-0.03em] text-foreground">
+              Contract &amp; freelance engagements
+            </h2>
+            <p>
+              I take on a few remote backend and integration projects, with working hours that overlap Asia-Pacific and
+              Europe.
+            </p>
+            <button type="button" className="btn mt-5" onClick={() => setDialogOpen(true)}>
+              Discuss a project →
+            </button>
+          </div>
+          <ul className="grid gap-3 sm:grid-cols-2">
+            {services.map((service) => (
+              <li key={service.title} className="rounded border border-border p-3.5">
+                <h3 className="text-[14.5px] font-semibold text-foreground">{service.title}</h3>
+                <p className="text-[13.5px]">{service.summary}</p>
+              </li>
+            ))}
+          </ul>
+        </HudCard>
+      </Reveal>
+      <ContactFormDialog open={dialogOpen} onOpenChange={setDialogOpen} />
     </section>
   );
 };

@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import Services from "./Services";
 
 describe("Services", () => {
@@ -40,7 +40,7 @@ describe("Services", () => {
 
   it("routes the call to action at a conversation, not a quote", () => {
     render(<Services />);
-    const cta = screen.getByRole("link", { name: /start a project/i });
-    expect(cta).toHaveAttribute("href", "#contact");
+    fireEvent.click(screen.getByRole("button", { name: "Discuss a project →" }));
+    expect(screen.getByRole("dialog", { name: "Start a Project" })).toBeInTheDocument();
   });
 });
