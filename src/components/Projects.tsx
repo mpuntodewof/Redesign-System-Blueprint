@@ -1,5 +1,6 @@
 import { Fragment } from "react";
 import { Link } from "react-router-dom";
+import { cn } from "@/lib/utils";
 import HudCard from "@/components/blueprint/HudCard";
 import Reveal from "@/components/blueprint/Reveal";
 import SectionHeading from "@/components/blueprint/SectionHeading";
@@ -28,12 +29,20 @@ const StackChips = ({ stack, limit }: { stack: string[]; limit?: number }) => {
   );
 };
 
-const ProjectLinks = ({ project, caseStudyLabel }: { project: Project; caseStudyLabel: string }) => {
+const ProjectLinks = ({
+  project,
+  caseStudyLabel,
+  className,
+}: {
+  project: Project;
+  caseStudyLabel: string;
+  className?: string;
+}) => {
   if (project.clickable === false) {
-    return <p className="mt-3.5 font-mono text-xs text-muted-foreground">Internal system · private</p>;
+    return <p className={cn("font-mono text-xs text-muted-foreground", className ?? "mt-3.5")}>Internal system · private</p>;
   }
   return (
-    <div className="mt-3.5 flex flex-wrap gap-4 font-mono text-xs font-medium">
+    <div className={cn("flex flex-wrap gap-4 font-mono text-xs font-medium", className ?? "mt-3.5")}>
       <Link to={`/project/${project.slug}`} className={linkClass}>
         {caseStudyLabel}
       </Link>
@@ -56,7 +65,7 @@ const CardTop = ({ label, org }: { label: string; org?: string }) => (
 );
 
 const FeaturedProject = ({ project }: { project: Project }) => (
-  <HudCard glow className="mb-4 p-6 md:p-7">
+  <HudCard as="article" glow className="mb-4 p-6 md:p-7">
     <CardTop label={`Featured case study · ${project.type}`} org={project.org} />
     <h3 className="mb-5 mt-2 text-[21px] font-semibold tracking-[-0.02em] text-foreground">{project.title}</h3>
     {project.highlight && (
@@ -81,7 +90,7 @@ const FeaturedProject = ({ project }: { project: Project }) => (
     )}
     <div className="flex flex-wrap items-end justify-between gap-5 pt-5">
       <StackChips stack={project.stack} />
-      <ProjectLinks project={project} caseStudyLabel="Read case study →" />
+      <ProjectLinks project={project} caseStudyLabel="Read case study →" className="mt-0" />
     </div>
   </HudCard>
 );

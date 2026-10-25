@@ -310,7 +310,15 @@
   .pipe {
     position: relative;
     padding-left: 28px;
+  }
+  .pipe-track {
+    position: absolute;
+    left: 0;
+    top: 8px;
+    bottom: 8px;
+    width: 16px;
     overflow: hidden;
+    pointer-events: none;
   }
   .pipe::before {
     content: "";

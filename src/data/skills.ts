@@ -61,7 +61,7 @@ export const skillCategories: SkillCategory[] = [
       { name: "SQL Server", icon: logo("microsoftsqlserver/microsoftsqlserver-original") },
       { name: "MySQL", icon: logo("mysql/mysql-original", { padInDark: true }) },
       { name: "Relational Database Design", icon: glyph("⊞") },
-      { name: "Query Optimization", icon: glyph("⚡") },
+      { name: "Query Optimization", icon: glyph("⚡\uFE0E") },
     ],
   },
   {

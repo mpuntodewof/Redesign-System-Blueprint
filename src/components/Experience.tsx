@@ -132,7 +132,9 @@ const Experience = () => {
       </Reveal>
 
       <div className="pipe">
-        <span className="pipe-pulse" aria-hidden="true" />
+        <span className="pipe-track" aria-hidden="true">
+          <span className="pipe-pulse" />
+        </span>
         {roles.map((role) => (
           <Reveal key={role.company} className="relative mb-5">
             <span className="pipe-node" aria-hidden="true" />
