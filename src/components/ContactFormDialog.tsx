@@ -87,12 +87,14 @@ const ContactFormDialog = ({ open, intent, onOpenChange }: ContactFormDialogProp
       return;
     }
     setStatus({ kind: "sending" });
+    // A hung request would leave the button on "Sending…"; time out into the email fallback.
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
     try {
       const response = await fetch(WEB3FORMS_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
-        // A hung request would leave the button on "Sending…"; time out into the email fallback.
-        signal: AbortSignal.timeout(15000),
+        signal: controller.signal,
         body: JSON.stringify({
           access_key: key,
           subject: subjectFor(data),
@@ -112,6 +114,8 @@ const ContactFormDialog = ({ open, intent, onOpenChange }: ContactFormDialogProp
       toast.success("Message sent", { description: `I reply within ${REPLY_TIME}.` });
     } catch {
       setStatus({ kind: "error", mailto: mailtoFor(data) });
+    } finally {
+      clearTimeout(timeout);
     }
   };
 
