@@ -12,7 +12,7 @@ describe("Contact", () => {
       </ContactDialogProvider>,
     );
     expect(screen.getByText(/"1–2 working days"/)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "a project brief" }));
+    fireEvent.click(screen.getByRole("button", { name: "Send a project brief" }));
     expect(screen.getByRole("dialog", { name: "Start a project" })).toBeInTheDocument();
   });
 

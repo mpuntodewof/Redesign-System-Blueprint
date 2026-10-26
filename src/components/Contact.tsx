@@ -55,7 +55,13 @@ const Contact = () => {
               </a>
             </TerminalLine>
             <TerminalLine command="send">
-              <button type="button" className={linkClass} onClick={() => openContact("project")}>
+              <button
+                type="button"
+                className={linkClass}
+                aria-label="Send a project brief"
+                aria-haspopup="dialog"
+                onClick={() => openContact("project")}
+              >
                 a project brief
               </button>
             </TerminalLine>

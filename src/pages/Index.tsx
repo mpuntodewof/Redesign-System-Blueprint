@@ -11,6 +11,7 @@ import { ContactDialogProvider } from "@/components/contact/ContactDialogContext
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import StageRail, { type RailStage } from "@/components/particles/StageRail";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { useScrollStage } from "@/hooks/useScrollStage";
 
 /** One entry per field shape, in data-stage order. */
@@ -25,6 +26,7 @@ const RAIL: RailStage[] = [
 const Index = () => {
   const location = useLocation();
   useScrollStage("home");
+  const reduced = usePrefersReducedMotion();
 
   // Detail pages link back with either router state ({ scrollTo }) or a hash.
   useEffect(() => {
@@ -32,9 +34,9 @@ const Index = () => {
     const target = fromState ?? (location.hash ? decodeURIComponent(location.hash.slice(1)) : undefined);
     if (!target) return;
     const el = document.getElementById(target);
-    if (el) requestAnimationFrame(() => el.scrollIntoView({ behavior: "smooth", block: "start" }));
+    if (el) requestAnimationFrame(() => el.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" }));
     if (fromState) window.history.replaceState({}, "");
-  }, [location.state, location.hash]);
+  }, [location.state, location.hash, reduced]);
 
   return (
     <ContactDialogProvider>
