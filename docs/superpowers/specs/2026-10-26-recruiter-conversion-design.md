@@ -94,11 +94,11 @@ One site serves three visitor intents without splitting into separate landing pa
   - Project: `"{title} — Case study · M. Puntodewo Fadhillah"`, description = `project.impact`.
   - Experience: `"{role} at {company} · M. Puntodewo Fadhillah"`, description = first module names joined.
 - **Edge metadata Worker** (`worker/index.ts`, wired in `wrangler.jsonc` with `"main": "worker/index.ts"`, an `ASSETS` binding and `"run_worker_first": ["/project/*", "/experience/*"]`):
-  - Fetches the SPA shell from `env.ASSETS`, then uses `HTMLRewriter` to replace `<title>`, `meta[name=description]`, `og:title`, `og:description`, `og:url`, `link[rel=canonical]` for known project/experience slugs.
-  - Metadata is built by a pure function `metaForPath(pathname)` in `src/lib/pageMeta.ts`, shared by the Worker and `useDocumentMeta`, so titles never drift.
+  - Fetches the SPA shell from `env.ASSETS` and replaces `<title>`, `meta[name=description]`, `og:title`, `og:description`, `og:url`, `twitter:title`, `twitter:description` and `link[rel=canonical]` for known project/experience slugs. The shell is our own ~2 KB `index.html`, so a pure string rewrite (`injectMeta`) is used instead of `HTMLRewriter`; it runs and is tested in Node.
+  - Metadata is built by a pure function `metaForPath(pathname)` and `injectMeta(html, meta)` in `src/lib/pageMeta.ts`, shared by the Worker and `useDocumentMeta`, so titles never drift.
   - Unknown slug or any thrown error: return the unmodified asset response.
   - Clickable projects only; `clickable: false` projects get no per-page tags (they have no page).
-- **Search basics:** `public/sitemap.xml` listing `/`, every clickable `/project/{slug}` and every `/experience/{slug}`, generated at build time by `scripts/sitemap.mjs` (run from `npm run build` before `vite build`) from the same data. `robots.txt` gains a `Sitemap:` line. JSON-LD `Person` in `index.html` (name, jobTitle, address Jakarta/ID, email, sameAs LinkedIn + GitHub, knowsAbout top skills).
+- **Search basics:** `public/sitemap.xml` listing `/`, every clickable `/project/{slug}` and every `/experience/{slug}`, emitted at build time by a small Vite plugin from the same data; `robots.txt` is emitted by the same plugin with a `Sitemap:` line (the static `public/robots.txt` is removed). The plugin also fills `%SITE_URL%` placeholders in `index.html`. JSON-LD `Person` in `index.html` (name, jobTitle, address Jakarta/ID, email, sameAs LinkedIn + GitHub, knowsAbout top skills).
 
 ## Out of scope
 
@@ -127,7 +127,7 @@ Testimonials strip, Cal.com booking, click/event analytics, custom domain purcha
 - `useHashTarget.test.ts`: targets a known id from the hash, ignores unknown ids, clears after the timeout.
 - `ContactFormDialog.test.tsx`: intent preselection and title; validation; Web3Forms payload (mocked `fetch`) including subject and `replyto`; success state; API failure shows the email fallback link; no key → `mailto:`; honeypot blocks sending; no `$` amounts and no "24 hours".
 - `pageMeta.test.ts`: titles/descriptions for a project, an experience role, a `clickable: false` slug (null), unknown paths (null).
-- `worker/index.test.ts`: rewrites tags for `/project/talenta-sap-integration`; passes unknown paths through untouched (HTMLRewriter mocked or tested via the pure `metaForPath` plus a thin rewriter adapter).
+- `edgeMeta.test.ts`: rewrites tags for `/project/talenta-sap-integration`; passes unknown paths, non-HTML and non-GET requests through untouched.
 - `Index.test.tsx`: section order `experience, projects, stack, work, contact`; CV link count updated to 4.
 - `Hero.test.tsx`: availability line, "Work with me →" points to `#work`.
 - Manual after deploy: LinkedIn Post Inspector and opengraph.xyz for `/` and one case-study URL; submit one real form message.
