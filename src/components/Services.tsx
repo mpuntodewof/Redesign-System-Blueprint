@@ -41,7 +41,7 @@ const Services = () => {
           </ul>
         </HudCard>
       </Reveal>
-      <ContactFormDialog open={dialogOpen} onOpenChange={setDialogOpen} />
+      <ContactFormDialog open={dialogOpen} intent="project" onOpenChange={setDialogOpen} />
     </section>
   );
 };

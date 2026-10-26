@@ -41,6 +41,6 @@ describe("Services", () => {
   it("routes the call to action at a conversation, not a quote", () => {
     render(<Services />);
     fireEvent.click(screen.getByRole("button", { name: "Discuss a project →" }));
-    expect(screen.getByRole("dialog", { name: "Start a Project" })).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "Start a project" })).toBeInTheDocument();
   });
 });
