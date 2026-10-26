@@ -32,28 +32,31 @@ const SkillIcon = ({ skill }: { skill: Skill }) => {
 };
 
 const TechStack = () => (
-  <section id="stack" className="mb-28 scroll-mt-20">
-    <Reveal>
-      <SectionHeading index="03" title="Tech stack" meta={`${skillCategories.length} domains · ${totalSkills} skills`} />
-    </Reveal>
-    <div className="grid gap-4 md:grid-cols-3">
-      {skillCategories.map((category) => (
-        <Reveal key={category.title} className={cn(category.wide && "md:col-span-2")}>
-          <HudCard className="h-full p-5">
-            <h3 className="mb-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-primary">
-              {category.title}
-            </h3>
-            <ul className="flex flex-wrap gap-1.5">
-              {category.skills.map((skill) => (
-                <li key={skill.name} className="chip chip-icon">
-                  <SkillIcon skill={skill} />
-                  {skill.name}
-                </li>
-              ))}
-            </ul>
-          </HudCard>
-        </Reveal>
-      ))}
+  <section id="stack" data-stage="3" data-stage-x="0.5" className="mb-28 scroll-mt-20">
+    <div className="lg:w-[min(620px,54%)]">
+      <Reveal>
+        <SectionHeading index="03" title="Tech stack" />
+        <p className="-mt-5 mb-8 mono-label">{`${skillCategories.length} domains · ${totalSkills} skills`}</p>
+      </Reveal>
+      <div className="grid gap-4 sm:grid-cols-2">
+        {skillCategories.map((category) => (
+          <Reveal key={category.title} className={cn(category.wide && "sm:col-span-2")}>
+            <HudCard className="h-full p-5">
+              <h3 className="mb-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-primary">
+                {category.title}
+              </h3>
+              <ul className="flex flex-wrap gap-1.5">
+                {category.skills.map((skill) => (
+                  <li key={skill.name} className="chip chip-icon">
+                    <SkillIcon skill={skill} />
+                    {skill.name}
+                  </li>
+                ))}
+              </ul>
+            </HudCard>
+          </Reveal>
+        ))}
+      </div>
     </div>
   </section>
 );

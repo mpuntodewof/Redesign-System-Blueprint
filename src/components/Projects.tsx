@@ -120,36 +120,39 @@ const Projects = () => {
   const professionalCount = projects.filter((p) => p.group === "professional").length;
 
   return (
-    <section id="projects" className="mb-28 scroll-mt-20">
-      <Reveal>
-        <SectionHeading
-          index="02"
-          title="Projects"
-          meta={`${professionalCount} professional systems · ${personal.length} personal builds`}
-        />
-      </Reveal>
-      {featured && (
+    <section id="projects" data-stage="2" data-stage-x="-0.52" className="mb-28 scroll-mt-20">
+      <div className="lg:ml-auto lg:w-[min(740px,62%)]">
         <Reveal>
-          <FeaturedProject project={featured} />
+          <SectionHeading
+            index="02"
+            title="Projects"
+            meta={`${professionalCount} professional systems · ${personal.length} personal builds`}
+          />
         </Reveal>
-      )}
-
-      <p className="subhead mono-label">Professional systems</p>
-      <div className="grid gap-4 md:grid-cols-2">
-        {professional.map((project) => (
-          <Reveal key={project.slug} className="h-full">
-            <ProjectCard project={project} />
+        {featured && (
+          <Reveal>
+            <FeaturedProject project={featured} />
           </Reveal>
-        ))}
-      </div>
+        )}
 
-      <p className="subhead mono-label">Personal builds</p>
-      <div className="grid gap-4 md:grid-cols-3">
-        {personal.map((project) => (
-          <Reveal key={project.slug} className="h-full">
-            <ProjectCard project={project} />
-          </Reveal>
-        ))}
+        <p className="subhead mono-label">Professional systems</p>
+        <div className="grid gap-4 md:grid-cols-2">
+          {professional.map((project) => (
+            <Reveal key={project.slug} className="h-full">
+              <ProjectCard project={project} />
+            </Reveal>
+          ))}
+        </div>
+
+        <p className="subhead mono-label">Personal builds</p>
+        {/* An odd last card spans the row instead of leaving a hole. */}
+        <div className="grid gap-4 md:grid-cols-2 md:[&>*:last-child:nth-child(odd)]:col-span-2">
+          {personal.map((project) => (
+            <Reveal key={project.slug} className="h-full">
+              <ProjectCard project={project} />
+            </Reveal>
+          ))}
+        </div>
       </div>
     </section>
   );

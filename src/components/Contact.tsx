@@ -16,8 +16,13 @@ const TerminalLine = ({ command, children }: { command: string; children: ReactN
 );
 
 const Contact = () => (
-  <section id="contact" className="mb-6 scroll-mt-20">
-    <Reveal>
+  <section
+    id="contact"
+    data-stage="4"
+    data-stage-x="0.48"
+    className="mb-6 flex min-h-[80vh] scroll-mt-20 items-center"
+  >
+    <Reveal className="w-full lg:w-[min(620px,54%)]">
       <HudCard>
         <div className="flex gap-[7px] border-b border-border px-3.5 py-[11px]" aria-hidden="true">
           {[0, 1, 2].map((dot) => (

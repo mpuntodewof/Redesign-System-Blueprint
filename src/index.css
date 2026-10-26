@@ -107,41 +107,177 @@
 }
 
 @layer components {
-  /* Page backdrop: masked grid plus one soft horizon glow. */
-  .grid-backdrop {
+  /* Particle field backdrop (ParticleField): base glow, WebGL canvas, vignette. */
+  .field-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -3;
+    pointer-events: none;
+    background: radial-gradient(1200px 700px at 72% 30%, hsl(var(--primary) / 0.1), transparent 60%),
+      radial-gradient(900px 600px at 10% 90%, hsl(var(--primary) / 0.06), transparent 60%),
+      hsl(var(--background));
+  }
+  .field-bg-fallback {
+    background: radial-gradient(600px 600px at 75% 30%, hsl(var(--primary) / 0.26), transparent 65%),
+      radial-gradient(500px 400px at 20% 80%, hsl(var(--primary) / 0.13), transparent 65%),
+      hsl(var(--background));
+  }
+  .field-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    display: block;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  .field-vignette {
     position: fixed;
     inset: 0;
     z-index: -1;
     pointer-events: none;
+    background: radial-gradient(ellipse at 50% 50%, transparent 55%, hsl(var(--background) / 0.7) 100%);
   }
-  .grid-backdrop::before {
+  @media (max-width: 1023px) {
+    .field-canvas {
+      opacity: 0.6;
+    }
+  }
+
+  /* Morph-stage progress: side dots plus a figure caption (homepage, wide screens). */
+  .stage-rail {
+    position: fixed;
+    right: 22px;
+    top: 50%;
+    z-index: 15;
+    transform: translateY(-50%);
+  }
+  .stage-rail ol {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .stage-rail::before,
+  .stage-rail-fill {
     content: "";
     position: absolute;
-    inset: 0;
-    background-image: linear-gradient(hsl(var(--grid-line)) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(var(--grid-line)) 1px, transparent 1px);
-    background-size: 44px 44px;
-    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 80%);
-    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 80%);
+    right: 4px;
+    top: 5px;
+    width: 1px;
   }
-  .grid-backdrop::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    top: -30vh;
-    width: 120vw;
-    height: 60vh;
-    transform: translateX(-50%);
-    background: radial-gradient(ellipse at center, hsl(var(--primary) / 0.13), transparent 65%);
+  .stage-rail::before {
+    bottom: 5px;
+    background: hsl(var(--border-strong));
+  }
+  .stage-rail-fill {
+    height: 0;
+    background: hsl(var(--primary));
+    box-shadow: 0 0 8px hsl(var(--primary));
+  }
+  .stage-rail a {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    font: 500 11px/1 "Geist Mono", ui-monospace, monospace;
+    letter-spacing: 0.06em;
+    color: hsl(var(--muted-foreground));
+  }
+  .stage-rail a span {
+    opacity: 0;
+    transform: translateX(6px);
+    transition: opacity 0.25s, transform 0.25s;
+  }
+  .stage-rail a:hover span,
+  .stage-rail a:focus-visible span,
+  .stage-rail a[aria-current="step"] span {
+    opacity: 1;
+    transform: none;
+  }
+  .stage-rail a[aria-current="step"] {
+    color: hsl(var(--foreground));
+  }
+  .stage-rail i {
+    position: relative;
+    flex: none;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    border: 1px solid hsl(var(--border-strong));
+    background: hsl(var(--background));
+    transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
+  }
+  .stage-rail a[aria-current="step"] i {
+    background: hsl(var(--primary));
+    border-color: hsl(var(--primary));
+    box-shadow: 0 0 0 4px hsl(var(--primary) / 0.18), 0 0 14px hsl(var(--primary));
+  }
+  .stage-figure {
+    position: fixed;
+    right: 22px;
+    bottom: 18px;
+    z-index: 15;
+    font: 500 11px/1.4 "Geist Mono", ui-monospace, monospace;
+    letter-spacing: 0.04em;
+    color: hsl(var(--muted-foreground));
+  }
+  .stage-figure b {
+    font-weight: 500;
+    color: hsl(var(--primary));
+  }
+  .stage-rail,
+  .stage-figure {
+    display: none;
+  }
+  @media (min-width: 1024px) {
+    .stage-rail,
+    .stage-figure {
+      display: block;
+    }
+  }
+
+  /* Hero headline: letters rise out of a 3D hinge, staggered by --i. */
+  .hero-word {
+    display: inline-block;
+    white-space: nowrap;
+  }
+  .hero-letter {
+    display: inline-block;
+    transform-origin: 50% 100% -0.3em;
+    animation: letter-rise 1s cubic-bezier(0.2, 0.75, 0.15, 1) both;
+    animation-delay: calc(var(--i) * 32ms + 150ms);
+  }
+  .hero-letter-accent {
+    background: linear-gradient(180deg, hsl(var(--foreground)) -30%, hsl(var(--primary)) 90%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .scroll-hint {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font: 500 11px/1 "Geist Mono", ui-monospace, monospace;
+    letter-spacing: 0.08em;
+    color: hsl(var(--muted-foreground));
+  }
+  .scroll-hint i {
+    display: block;
+    width: 1px;
+    height: 28px;
+    background: linear-gradient(hsl(var(--primary)), transparent);
+    animation: drip 2s infinite;
   }
 
   /* HUD panel with two corner brackets. */
   .hud {
     position: relative;
-    background: hsl(var(--card) / 0.78);
+    background: hsl(var(--card) / 0.6);
     border: 1px solid hsl(var(--border));
     border-radius: 4px;
-    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    backdrop-filter: blur(16px) saturate(140%);
+    box-shadow: 0 30px 60px -30px hsl(var(--background) / 0.6);
   }
   .hud::before,
   .hud::after {
@@ -229,6 +365,7 @@
     color: hsl(var(--foreground));
     font-size: 14px;
     font-weight: 500;
+    white-space: nowrap;
     transition: border-color 0.2s, box-shadow 0.2s;
   }
   .btn:hover {
@@ -363,64 +500,15 @@
       left: -40px;
     }
   }
-
-  /* Integration console SVG. */
-  .cx-box {
-    fill: hsl(var(--node));
-    stroke: hsl(var(--border-strong));
-  }
-  .cx-label {
-    fill: hsl(var(--foreground));
-    font: 500 11px "Geist Mono", ui-monospace, monospace;
-  }
-  .cx-cap {
-    fill: hsl(var(--muted-foreground));
-    font: 500 9.5px "Geist Mono", ui-monospace, monospace;
-    letter-spacing: 0.08em;
-  }
-  .cx-wire {
-    fill: none;
-    stroke: hsl(var(--border-strong));
-    stroke-width: 1.2;
-  }
-  .cx-wire-live {
-    fill: none;
-    stroke: hsl(var(--primary) / 0.35);
-    stroke-width: 1.2;
-    stroke-dasharray: 3 5;
-    animation: wire-flow 1.6s linear infinite;
-  }
-  .cx-core {
-    fill: hsl(var(--primary) / 0.08);
-    stroke: hsl(var(--primary));
-  }
-  .cx-core-glow {
-    fill: none;
-    stroke: hsl(var(--primary));
-    opacity: 0.35;
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: core-pulse 3s ease-in-out infinite;
-  }
-  .cx-core-title {
-    fill: hsl(var(--primary));
-    font: 600 11px "Geist Mono", ui-monospace, monospace;
-  }
-  .cx-core-sub {
-    fill: hsl(var(--body));
-    font: 400 9.5px "Geist Mono", ui-monospace, monospace;
-  }
-  .cx-pkt {
-    fill: hsl(var(--primary));
-    filter: drop-shadow(0 0 4px hsl(var(--primary)));
-  }
 }
 
 @layer utilities {
   /* Legacy names still used by the case-study pages and dialogs, restyled to the blueprint look. */
   .glass {
-    background: hsl(var(--card));
+    background: hsl(var(--card) / 0.6);
     border: 1px solid hsl(var(--border));
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    backdrop-filter: blur(16px) saturate(140%);
   }
   .gradient-text {
     color: hsl(var(--primary));
@@ -441,12 +529,15 @@
 @keyframes caret-blink {
   50% { opacity: 0; }
 }
-@keyframes wire-flow {
-  to { stroke-dashoffset: -16; }
+@keyframes letter-rise {
+  from { opacity: 0; transform: translateY(0.45em) rotateX(-85deg); filter: blur(6px); }
+  to { opacity: 1; transform: none; filter: none; }
 }
-@keyframes core-pulse {
-  0%, 100% { opacity: 0.15; transform: scale(1); }
-  50% { opacity: 0.45; transform: scale(1.04); }
+@keyframes drip {
+  0% { transform: scaleY(0); transform-origin: top; }
+  50% { transform: scaleY(1); transform-origin: top; }
+  51% { transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
 }
 @keyframes pipe-travel {
   from { transform: translateY(0); }
@@ -459,10 +550,14 @@
   }
   .caret,
   .status-dot,
-  .cx-wire-live,
-  .cx-core-glow,
-  .pipe-pulse {
+  .pipe-pulse,
+  .hero-letter,
+  .scroll-hint i {
     animation: none;
+  }
+  .stage-rail a span,
+  .stage-rail i {
+    transition: none;
   }
   .pipe-pulse {
     display: none;

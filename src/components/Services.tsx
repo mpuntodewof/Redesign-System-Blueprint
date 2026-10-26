@@ -15,9 +15,9 @@ const Services = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   return (
-    <section id="contract" className="mb-28 scroll-mt-20">
-      <Reveal>
-        <HudCard glow className="grid items-start gap-10 p-6 md:grid-cols-[1fr_1.35fr] md:p-9">
+    <section id="contract" data-stage="3" data-stage-x="0.5" className="mb-28 scroll-mt-20">
+      <Reveal className="lg:w-[min(620px,54%)]">
+        <HudCard glow className="grid items-start gap-7 p-6 md:p-8">
           <div>
             <p aria-hidden="true" className="font-mono text-xs text-primary">{"// also available"}</p>
             <h2 className="mb-2.5 mt-2 text-[26px] font-semibold tracking-[-0.03em] text-foreground">

@@ -6,8 +6,10 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import ProjectDetail from "./pages/ProjectDetail.tsx";
+import ExperienceDetail from "./pages/ExperienceDetail.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import { MotionConfig } from "framer-motion";
+import ParticleField from "@/components/particles/ParticleField";
 
 const queryClient = new QueryClient();
 
@@ -18,10 +20,12 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <Sonner />
+          <ParticleField />
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/project/:slug" element={<ProjectDetail />} />
+              <Route path="/experience/:slug" element={<ExperienceDetail />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
