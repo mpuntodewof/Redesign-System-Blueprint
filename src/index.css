@@ -342,6 +342,12 @@
     opacity: 1;
   }
 
+  /* A card opened from a shared deep link (e.g. /#work-contract) pulses once. */
+  .is-targeted {
+    border-color: hsl(var(--primary));
+    animation: target-pulse 2.4s ease-out;
+  }
+
   .chip {
     display: inline-flex;
     align-items: center;
@@ -559,6 +565,11 @@
   51% { transform-origin: bottom; }
   100% { transform: scaleY(0); transform-origin: bottom; }
 }
+@keyframes target-pulse {
+  0% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0.55); }
+  40% { box-shadow: 0 0 0 8px hsl(var(--primary) / 0.18), 0 0 32px hsl(var(--primary) / 0.35); }
+  100% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0); }
+}
 @keyframes pipe-travel {
   from { transform: translateY(0); }
   to { transform: translateY(1100px); opacity: 0; }
@@ -568,6 +579,7 @@
   html {
     scroll-behavior: auto;
   }
+  .is-targeted,
   .caret,
   .status-dot,
   .pipe-pulse,
