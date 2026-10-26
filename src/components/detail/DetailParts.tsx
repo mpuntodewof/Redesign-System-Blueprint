@@ -9,7 +9,7 @@ export const BackLink = ({ section, label }: { section: string; label: string })
   <Link
     to="/"
     state={{ scrollTo: section }}
-    className="inline-flex items-center gap-2 font-mono text-xs font-medium uppercase tracking-[0.06em] text-muted-foreground transition-colors hover:text-primary"
+    className="tap gap-2 font-mono text-xs font-medium uppercase tracking-[0.06em] text-muted-foreground transition-colors hover:text-primary"
   >
     <span aria-hidden="true">←</span> {label}
   </Link>
@@ -27,7 +27,7 @@ interface DetailHeroProps {
 /** Full-height intro with the field's shape on the right and the text on the left. */
 export const DetailHero = ({ stage, back, eyebrow, title, lede, children }: DetailHeroProps) => (
   <section data-stage={stage} data-stage-x="0.5" className="flex min-h-[68svh] items-center py-14">
-    <div className="lg:w-[min(640px,56%)]">
+    <div className="xl:w-[min(640px,56%)]">
       {back}
       <p className="mt-8 font-mono text-[11.5px] font-medium uppercase tracking-[0.1em] text-primary">{eyebrow}</p>
       <h1 className="mb-4 mt-3 text-[clamp(34px,5vw,60px)] font-semibold leading-[1.02] tracking-[-0.04em] text-foreground">

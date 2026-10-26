@@ -16,7 +16,7 @@ const Services = () => {
 
   return (
     <section id="contract" data-stage="3" data-stage-x="0.5" className="mb-28 scroll-mt-20">
-      <Reveal className="lg:w-[min(620px,54%)]">
+      <Reveal className="xl:w-[min(620px,54%)]">
         <HudCard glow className="grid items-start gap-7 p-6 md:p-8">
           <div>
             <p aria-hidden="true" className="font-mono text-xs text-primary">{"// also available"}</p>

@@ -114,7 +114,7 @@ const ExperienceDetail = () => {
             </SideCard>
             {related.length > 0 && (
               <SideCard title="Related case studies">
-                <ul className="space-y-2.5 text-sm">
+                <ul className="space-y-1 text-sm">
                   {related.map((project) => (
                     <li key={project.slug}>
                       {project.clickable === false ? (
@@ -124,7 +124,7 @@ const ExperienceDetail = () => {
                       ) : (
                         <Link
                           to={`/project/${project.slug}`}
-                          className="font-medium text-foreground transition-colors hover:text-primary"
+                          className="tap font-medium text-foreground transition-colors hover:text-primary"
                         >
                           {project.title} →
                         </Link>
@@ -141,7 +141,7 @@ const ExperienceDetail = () => {
                   href={LINKEDIN_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-mono text-xs font-medium uppercase tracking-[0.06em] text-muted-foreground transition-colors hover:text-primary"
+                  className="tap font-mono text-xs font-medium uppercase tracking-[0.06em] text-muted-foreground transition-colors hover:text-primary"
                 >
                   LinkedIn profile ↗
                 </a>

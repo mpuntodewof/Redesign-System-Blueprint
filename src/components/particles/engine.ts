@@ -11,7 +11,7 @@ export interface ParticleEngine {
 }
 
 /** Below this width the content is single-column, so the shape centres behind it. */
-const NARROW = 1024;
+const NARROW = 1280;
 
 const THEMES: Record<FieldTheme, { a: string; b: string; c: string; opacity: number; blending: THREE.Blending }> = {
   // Additive glow on navy.

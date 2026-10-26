@@ -33,7 +33,7 @@ const SkillIcon = ({ skill }: { skill: Skill }) => {
 
 const TechStack = () => (
   <section id="stack" data-stage="3" data-stage-x="0.5" className="mb-28 scroll-mt-20">
-    <div className="lg:w-[min(620px,54%)]">
+    <div className="xl:w-[min(620px,54%)]">
       <Reveal>
         <SectionHeading index="03" title="Tech stack" />
         <p className="-mt-5 mb-8 mono-label">{`${skillCategories.length} domains · ${totalSkills} skills`}</p>

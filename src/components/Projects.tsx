@@ -7,7 +7,7 @@ import SectionHeading from "@/components/blueprint/SectionHeading";
 import projects, { type Project } from "@/data/projects";
 
 const STACK_PREVIEW = 4;
-const linkClass = "text-foreground transition-colors hover:text-primary";
+const linkClass = "tap text-foreground transition-colors hover:text-primary";
 const STEPS = [
   { num: "01", title: "Context", key: "context" },
   { num: "02", title: "Approach", key: "approach" },
@@ -121,7 +121,7 @@ const Projects = () => {
 
   return (
     <section id="projects" data-stage="2" data-stage-x="-0.52" className="mb-28 scroll-mt-20">
-      <div className="lg:ml-auto lg:w-[min(740px,62%)]">
+      <div className="xl:ml-auto xl:w-[min(740px,62%)]">
         <Reveal>
           <SectionHeading
             index="02"

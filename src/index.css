@@ -138,7 +138,7 @@
     pointer-events: none;
     background: radial-gradient(ellipse at 50% 50%, transparent 55%, hsl(var(--background) / 0.7) 100%);
   }
-  @media (max-width: 1023px) {
+  @media (max-width: 1279px) {
     .field-canvas {
       opacity: 0.6;
     }
@@ -229,11 +229,31 @@
   .stage-figure {
     display: none;
   }
-  @media (min-width: 1024px) {
+  @media (min-width: 1280px) {
     .stage-rail,
     .stage-figure {
       display: block;
     }
+  }
+  /* The active label only fits beside content once the margins are wide enough. */
+  @media (max-width: 1439px) {
+    .stage-figure {
+      display: none;
+    }
+    .stage-rail a[aria-current="step"] span {
+      opacity: 0;
+    }
+    .stage-rail a:hover span,
+    .stage-rail a:focus-visible span {
+      opacity: 1;
+    }
+  }
+
+  /* Small text links get a 32px-tall hit area (WCAG 2.5.8 asks for 24px). */
+  .tap {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
   }
 
   /* Hero headline: letters rise out of a 3D hinge, staggered by --i. */

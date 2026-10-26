@@ -41,7 +41,7 @@ const Hero = () => {
 
   return (
     <section data-stage="0" data-stage-x="0.5" className="flex min-h-[calc(100svh-62px)] items-center py-16">
-      <div className="lg:w-[min(620px,54%)]">
+      <div className="xl:w-[min(620px,54%)]">
         <p className="flex flex-wrap items-center gap-2.5 font-mono text-xs font-medium uppercase tracking-[0.04em] text-primary">
           <span className="status-dot" aria-hidden="true" />
           Available

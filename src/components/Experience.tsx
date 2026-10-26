@@ -7,7 +7,7 @@ import { LINKEDIN_URL } from "@/lib/profile";
 
 const Experience = () => (
   <section id="experience" data-stage="1" data-stage-x="0.5" className="mb-28 scroll-mt-20">
-    <div className="lg:w-[min(620px,54%)]">
+    <div className="xl:w-[min(620px,54%)]">
       <Reveal>
         <SectionHeading index="01" title="Experience" />
         <p className="-mt-5 mb-8 mono-label">4 orgs · banking · transport · pharma · logistics</p>
@@ -51,7 +51,7 @@ const Experience = () => (
               <Link
                 to={`/experience/${role.slug}`}
                 aria-label={`Full details: ${role.role} at ${role.company}`}
-                className="mt-4 inline-block py-1 font-mono text-xs font-medium text-foreground transition-colors hover:text-primary"
+                className="tap mt-3 font-mono text-xs font-medium text-foreground transition-colors hover:text-primary"
               >
                 Full details →
               </Link>

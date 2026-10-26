@@ -4,7 +4,7 @@ import Reveal from "@/components/blueprint/Reveal";
 import { EMAIL, GITHUB_URL, LINKEDIN_URL, RESUME_FILENAME, RESUME_URL } from "@/lib/profile";
 
 const linkClass =
-  "border-b border-dashed border-primary/60 text-foreground transition-colors [overflow-wrap:anywhere] hover:text-primary";
+  "inline-block py-1 border-b border-dashed border-primary/60 text-foreground transition-colors [overflow-wrap:anywhere] hover:text-primary";
 
 const TerminalLine = ({ command, children }: { command: string; children: ReactNode }) => (
   <p>
@@ -22,7 +22,7 @@ const Contact = () => (
     data-stage-x="0.48"
     className="mb-6 flex min-h-[80vh] scroll-mt-20 items-center"
   >
-    <Reveal className="w-full lg:w-[min(620px,54%)]">
+    <Reveal className="w-full xl:w-[min(620px,54%)]">
       <HudCard>
         <div className="flex gap-[7px] border-b border-border px-3.5 py-[11px]" aria-hidden="true">
           {[0, 1, 2].map((dot) => (
