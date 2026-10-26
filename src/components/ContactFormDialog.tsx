@@ -50,7 +50,7 @@ const bodyFor = (data: ContactFormValues) =>
     data.message,
   ].join("\n");
 
-export const mailtoFor = (data: ContactFormValues) =>
+const mailtoFor = (data: ContactFormValues) =>
   `mailto:${EMAIL}?subject=${encodeURIComponent(subjectFor(data))}&body=${encodeURIComponent(bodyFor(data))}`;
 
 interface ContactFormDialogProps {
@@ -91,6 +91,8 @@ const ContactFormDialog = ({ open, intent, onOpenChange }: ContactFormDialogProp
       const response = await fetch(WEB3FORMS_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
+        // A hung request would leave the button on "Sending…"; time out into the email fallback.
+        signal: AbortSignal.timeout(15000),
         body: JSON.stringify({
           access_key: key,
           subject: subjectFor(data),
