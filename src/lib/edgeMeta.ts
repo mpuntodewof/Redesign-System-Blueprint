@@ -15,15 +15,18 @@ export async function handlePageRequest(request: Request, assets: AssetFetcher):
   const meta = request.method === "GET" || request.method === "HEAD" ? metaForPath(new URL(request.url).pathname) : null;
   if (!meta) return assets.fetch(request);
 
-  const shell = await assets.fetch(new Request(new URL("/", request.url), { headers: request.headers }));
   try {
+    // No request headers: Range or conditional headers would yield a partial or 304 shell.
+    const shell = await assets.fetch(new Request(new URL("/", request.url)));
     const type = shell.headers.get("content-type") ?? "";
-    if (!shell.ok || !type.includes("text/html")) return shell;
-    const html = injectMeta(await shell.clone().text(), meta);
+    if (shell.status !== 200 || !type.includes("text/html")) return shell;
+    const html = injectMeta(await shell.text(), meta);
     const headers = new Headers(shell.headers);
+    // The body differs per page, so the shell's length and validator no longer apply.
     headers.delete("content-length");
-    return new Response(request.method === "HEAD" ? null : html, { status: shell.status, headers });
+    headers.delete("etag");
+    return new Response(request.method === "HEAD" ? null : html, { status: 200, headers });
   } catch {
-    return shell;
+    return assets.fetch(request);
   }
 }
