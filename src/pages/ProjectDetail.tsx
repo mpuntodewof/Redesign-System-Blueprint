@@ -1,4 +1,6 @@
 import { useEffect } from "react";
+import { useDocumentMeta } from "@/hooks/useDocumentMeta";
+import { metaForPath } from "@/lib/pageMeta";
 import { useParams } from "react-router-dom";
 import projects from "@/data/projects";
 import Navbar from "@/components/Navbar";
@@ -16,6 +18,7 @@ const ProjectDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const project = projects.find((p) => p.slug === slug);
   useScrollStage(slug);
+  useDocumentMeta(metaForPath(`/project/${slug ?? ""}`));
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "auto" });

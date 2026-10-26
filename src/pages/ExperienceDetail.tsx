@@ -1,4 +1,6 @@
 import { useEffect } from "react";
+import { useDocumentMeta } from "@/hooks/useDocumentMeta";
+import { metaForPath } from "@/lib/pageMeta";
 import { Link, useParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -13,6 +15,7 @@ const ExperienceDetail = () => {
   const index = roles.findIndex((r) => r.slug === slug);
   const role = roles[index];
   useScrollStage(slug);
+  useDocumentMeta(metaForPath(`/experience/${slug ?? ""}`));
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "auto" });
