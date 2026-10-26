@@ -1,9 +1,21 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { ContactDialogProvider } from "@/components/contact/ContactDialogContext";
 import { EMAIL, GITHUB_URL, LINKEDIN_URL, RESUME_FILENAME, RESUME_URL } from "@/lib/profile";
 import Contact from "./Contact";
 import Footer from "./Footer";
 
 describe("Contact", () => {
+  it("states the reply time and opens a project brief", () => {
+    render(
+      <ContactDialogProvider>
+        <Contact />
+      </ContactDialogProvider>,
+    );
+    expect(screen.getByText(/"1–2 working days"/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "a project brief" }));
+    expect(screen.getByRole("dialog", { name: "Start a project" })).toBeInTheDocument();
+  });
+
   it("is addressed to people hiring", () => {
     render(<Contact />);
     expect(screen.getByRole("heading", { level: 2, name: "Hiring for backend or integration work?" })).toBeInTheDocument();

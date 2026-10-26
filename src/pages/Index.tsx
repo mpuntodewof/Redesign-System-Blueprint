@@ -6,7 +6,8 @@ import KpiStrip from "@/components/KpiStrip";
 import Experience from "@/components/Experience";
 import Projects from "@/components/Projects";
 import TechStack from "@/components/TechStack";
-import Services from "@/components/Services";
+import WorkWithMe from "@/components/WorkWithMe";
+import { ContactDialogProvider } from "@/components/contact/ContactDialogContext";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import StageRail, { type RailStage } from "@/components/particles/StageRail";
@@ -36,7 +37,7 @@ const Index = () => {
   }, [location.state, location.hash]);
 
   return (
-    <>
+    <ContactDialogProvider>
       <Navbar />
       <StageRail stages={RAIL} />
       <main id="top" className="mx-auto max-w-[1180px] overflow-x-clip px-4 md:px-8">
@@ -45,11 +46,11 @@ const Index = () => {
         <Experience />
         <Projects />
         <TechStack />
-        <Services />
+        <WorkWithMe />
         <Contact />
       </main>
       <Footer />
-    </>
+    </ContactDialogProvider>
   );
 };
 

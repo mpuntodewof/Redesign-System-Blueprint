@@ -1,7 +1,7 @@
 import { type CSSProperties } from "react";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { useTypewriter } from "@/hooks/useTypewriter";
-import { FULL_NAME, GITHUB_URL, RESUME_FILENAME, RESUME_URL } from "@/lib/profile";
+import { AVAILABILITY, FULL_NAME, GITHUB_URL, RESUME_FILENAME, RESUME_URL } from "@/lib/profile";
 import { cn } from "@/lib/utils";
 
 const ROLES = ["Backend & Integration Engineer", ".NET Core · Go · SQL Server", "SAP / HR / payments middleware"] as const;
@@ -44,8 +44,7 @@ const Hero = () => {
       <div className="xl:w-[min(620px,54%)]">
         <p className="flex flex-wrap items-center gap-2.5 font-mono text-xs font-medium uppercase tracking-[0.04em] text-primary">
           <span className="status-dot" aria-hidden="true" />
-          Available
-          <span className="text-muted-foreground">/ open to remote roles · Jakarta UTC+7</span>
+          {AVAILABILITY}
         </p>
         <Headline />
         <p className="mb-5 min-h-[1.6em] font-mono text-[clamp(14.5px,1.5vw,17px)] font-medium text-body">
@@ -64,9 +63,12 @@ const Hero = () => {
           <b className="font-medium text-foreground">payment gateways and finance ledgers</b>, or a bank and the national{" "}
           <b className="font-medium text-foreground">BI-FAST</b> rails. The data has to arrive correctly every time.
         </p>
+        <p className="mt-4 font-mono text-[12.5px] text-muted-foreground">
+          7+ years · banking, transport, pharma · systems running 24/7 in production
+        </p>
         <div className="mt-7 flex flex-wrap gap-2.5">
-          <a className="btn btn-primary" href="#experience">
-            View experience →
+          <a className="btn btn-primary" href="#work">
+            Work with me →
           </a>
           <a className="btn" href={RESUME_URL} download={RESUME_FILENAME}>
             Download CV ↓

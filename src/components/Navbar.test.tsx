@@ -20,7 +20,7 @@ describe("Navbar", () => {
     renderNavbar();
     const nav = screen.getByRole("navigation", { name: "Primary" });
     const hrefs = Array.from(nav.querySelectorAll("a")).map((a) => a.getAttribute("href"));
-    expect(hrefs).toEqual(["#experience", "#projects", "#stack", "#contract", "#contact"]);
+    expect(hrefs).toEqual(["#experience", "#projects", "#stack", "#work", "#contact"]);
   });
 
   it("downloads the CV from the résumé button", () => {
