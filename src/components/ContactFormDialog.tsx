@@ -121,7 +121,7 @@ const ContactFormDialog = ({ open, intent, onOpenChange }: ContactFormDialogProp
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="glass max-h-[90vh] overflow-y-auto border-border sm:max-w-[520px]">
+      <DialogContent className="max-h-[90vh] overflow-y-auto border-border bg-card shadow-2xl sm:max-w-[520px]">
         <DialogHeader>
           <DialogTitle className="text-2xl text-foreground">{current.title}</DialogTitle>
           <DialogDescription>I reply within {REPLY_TIME}.</DialogDescription>
